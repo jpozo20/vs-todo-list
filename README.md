@@ -1,2 +1,5 @@
-# vs-todo-list
-Visual Studio extension for managing To-Dos
+# VsToDoList
+
+Visual Studio extension for managing tasks and To-Dos and avoid context switching when using an external program.
+
+
