@@ -15,6 +15,8 @@ using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.Win32;
+using System.Collections.ObjectModel;
+using VSToDoList.Models;
 
 namespace VSToDoList
 {
@@ -36,15 +38,19 @@ namespace VSToDoList
     /// </para>
     /// </remarks>
     [PackageRegistration(UseManagedResourcesOnly = true)]
-    [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)] // Info on this package for Help/About
+    [InstalledProductRegistration("#110", "#112", "0.1", IconResourceID = 400)] // Info on this package for Help/About
     [Guid(VSTodoListPackage.PackageGuidString)]
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
+    [ProvideMenuResource("Menus.ctmenu", 1)]
+    [ProvideToolWindow(typeof(VSToDoList.UI.MainWindow.ToDoListWindow))]
     public sealed class VSTodoListPackage : Package
     {
         /// <summary>
         /// VSTodoListPackage GUID string.
         /// </summary>
         public const string PackageGuidString = "d8b2716d-918d-47ad-8938-706d983d9d6c";
+
+        
 
         /// <summary>
         /// Initializes a new instance of the <see cref="VSTodoListPackage"/> class.
@@ -55,6 +61,8 @@ namespace VSToDoList
             // any Visual Studio service because at this point the package object is created but
             // not sited yet inside Visual Studio environment. The place to do all the other
             // initialization is the Initialize method.
+            
+
         }
 
         #region Package Members
@@ -66,6 +74,7 @@ namespace VSToDoList
         protected override void Initialize()
         {
             base.Initialize();
+            VSToDoList.UI.MainWindow.ToDoListWindowCommand.Initialize(this);
         }
 
         #endregion
