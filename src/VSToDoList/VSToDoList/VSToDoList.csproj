@@ -52,6 +52,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="BL\Base\NotifiesPropertyChanged.cs" />
+    <Compile Include="BL\Services\Converters\ControlSizeConverter.cs" />
     <Compile Include="Models\Task.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UI\MainWindow\ToDoListWindow.cs" />
@@ -185,9 +186,7 @@
       <ManifestResourceName>VSPackage</ManifestResourceName>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="BL\Services\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Page Include="UI\MainWindow\ToDoListWindowControl.xaml">
       <SubType>Designer</SubType>
@@ -213,8 +212,4 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  <UsingTask TaskName="Mathtone.MIST.NotificationWeaverBuildTask" AssemblyFile="..\packages\Mathtone.MIST.2.5.2\tools\net46\Mathtone.MIST.Builder.dll" />
-  <Target Name="AfterBuild">
-    <NotificationWeaverBuildTask TargetPath="$(TargetPath)" DebugMode="True" />
-  </Target>
 </Project>
