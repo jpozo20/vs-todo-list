@@ -173,6 +173,9 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Resources\minus.png" />
+    <Resource Include="Resources\plus.png" />
+    <Resource Include="Resources\plus-selected.png" />
     <Content Include="Resources\VSTodoListPackage.ico" />
     <Content Include="UI\MainWindow\Resources\ToDoListWindowCommand.png" />
     <VSCTCompile Include="UI\MainWindow\VSTodoListPackage.vsct">
