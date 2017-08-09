@@ -22,5 +22,16 @@ namespace VSToDoList.UI.MainWindow
         }
 
         public ToDoListWindowViewModel ViewModel => (ToDoListWindowViewModel)Resources["ViewModel"];
+
+        private void OnRemoveItemClicked(object sender, System.Windows.RoutedEventArgs e)
+        {
+            var button = (Control)sender;
+            var buttonParent = (Grid)(button.Parent);
+            var treeViewItem = (ContentPresenter)buttonParent.TemplatedParent;
+            var task = treeViewItem.Content;
+
+            ViewModel.RemoveTaskCommand.Execute(task);
+
+        }
     }
 }
