@@ -9,6 +9,7 @@ namespace VSToDoList.UI.MainWindow
     using System;
     using System.Runtime.InteropServices;
     using Microsoft.VisualStudio.Shell;
+    using Microsoft.VisualStudio.Shell.Interop;
 
     /// <summary>
     /// This class implements the tool window exposed by this package and hosts a user control.
@@ -24,6 +25,7 @@ namespace VSToDoList.UI.MainWindow
     [Guid("24a31f03-f6e5-4c62-ae53-687fb56d2c46")]
     public class ToDoListWindow : ToolWindowPane
     {
+        //private ToDoListWindowControl _windowControl;
         /// <summary>
         /// Initializes a new instance of the <see cref="ToDoListWindow"/> class.
         /// </summary>
@@ -35,6 +37,8 @@ namespace VSToDoList.UI.MainWindow
             // we are not calling Dispose on this object. This is because ToolWindowPane calls Dispose on
             // the object returned by the Content property.
             this.Content = new ToDoListWindowControl();
+            this.ToolBar = new System.ComponentModel.Design.CommandID((ToDoListWindowCommand.CommandSet), ToDoListWindowCommand.ToolbarID);
+            //this.ToolBarLocation = (int)VSTWT_LOCATION.VSTWT_TOP;
         }
     }
 }

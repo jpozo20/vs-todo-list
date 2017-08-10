@@ -194,6 +194,8 @@
     <Resource Include="Resources\plus.png" />
     <Resource Include="Resources\plus-selected.png" />
     <Content Include="Resources\VSTodoListPackage.ico" />
+    <Content Include="UI\MainWindow\Resources\minus-red-16.png" />
+    <Content Include="UI\MainWindow\Resources\plus-green-16.png" />
     <Content Include="UI\MainWindow\Resources\ToDoListWindowCommand.png" />
     <VSCTCompile Include="UI\MainWindow\VSTodoListPackage.vsct">
       <ResourceName>Menus.ctmenu</ResourceName>

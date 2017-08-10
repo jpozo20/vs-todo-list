@@ -22,6 +22,10 @@ namespace VSToDoList.UI.MainWindow
         /// </summary>
         public const int CommandId = 0x0100;
 
+        public const int AddTaskCommandId = 0x0110;
+        public const int RemoveTaskCommandId = 0x0111;
+        public const int ToolbarID = 0x0101;
+
         /// <summary>
         /// Command menu group (command set GUID).
         /// </summary>
@@ -102,6 +106,19 @@ namespace VSToDoList.UI.MainWindow
 
             IVsWindowFrame windowFrame = (IVsWindowFrame)window.Frame;
             Microsoft.VisualStudio.ErrorHandler.ThrowOnFailure(windowFrame.Show());
+
+            //OleMenuCommandService commandService = this.ServiceProvider.GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
+            //if (commandService != null)
+            //{
+            //    var addTaskMenuCommandId = new CommandID(CommandSet, AddTaskCommandId);
+            //    var addTaskMenuItem = new MenuCommand(new EventHandler(OnAddTaskButtonClicked), addTaskMenuCommandId);
+            //    commandService.AddCommand(addTaskMenuItem);
+            //}
+        }
+
+        void OnAddTaskButtonClicked(object sender, EventArgs e)
+        {
+
         }
     }
 }
