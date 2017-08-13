@@ -57,6 +57,8 @@ namespace VSToDoList.UI.MainWindow
                 var menuItem = new MenuCommand(this.ShowToolWindow, menuCommandID);
                 commandService.AddCommand(menuItem);
             }
+
+            //var shellService = this.ServiceProvider.GetService(typeof(SVsUIShell)) as IVsUIShell5;
         }
 
         /// <summary>
