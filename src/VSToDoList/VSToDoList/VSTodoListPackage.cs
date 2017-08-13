@@ -4,19 +4,10 @@
 // </copyright>
 //------------------------------------------------------------------------------
 
-using System;
-using System.ComponentModel.Design;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
-using System.Runtime.InteropServices;
-using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.Win32;
-using System.Collections.ObjectModel;
-using VSToDoList.Models;
+using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
 
 namespace VSToDoList
 {
@@ -50,8 +41,6 @@ namespace VSToDoList
         /// </summary>
         public const string PackageGuidString = "d8b2716d-918d-47ad-8938-706d983d9d6c";
 
-        
-
         /// <summary>
         /// Initializes a new instance of the <see cref="VSTodoListPackage"/> class.
         /// </summary>
@@ -61,8 +50,6 @@ namespace VSToDoList
             // any Visual Studio service because at this point the package object is created but
             // not sited yet inside Visual Studio environment. The place to do all the other
             // initialization is the Initialize method.
-            
-
         }
 
         #region Package Members
@@ -77,6 +64,6 @@ namespace VSToDoList
             VSToDoList.UI.MainWindow.ToDoListWindowCommand.Initialize(this);
         }
 
-        #endregion
+        #endregion Package Members
     }
 }

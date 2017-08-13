@@ -6,10 +6,9 @@
 
 namespace VSToDoList.UI.MainWindow
 {
+    using Microsoft.VisualStudio.Shell;
     using System;
     using System.Runtime.InteropServices;
-    using Microsoft.VisualStudio.Shell;
-    using Microsoft.VisualStudio.Shell.Interop;
 
     /// <summary>
     /// This class implements the tool window exposed by this package and hosts a user control.

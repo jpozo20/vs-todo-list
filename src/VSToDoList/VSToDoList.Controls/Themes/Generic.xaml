@@ -7,9 +7,9 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:EditBox}">
                     <TextBlock x:Name="PART_TextBlockPart"
-                        Text="{Binding Path=Value,Mode=TwoWay,RelativeSource = 
+                        Text="{Binding Path=Value,Mode=TwoWay,RelativeSource =
                        {RelativeSource TemplatedParent}}"
-                       Width="{Binding RelativeSource={RelativeSource AncestorType=TreeViewItem},Path=ActualWidth}"/>
+                       Width="{Binding RelativeSource={RelativeSource AncestorType=TreeViewItem},Path=ActualWidth}" />
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

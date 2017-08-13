@@ -4,11 +4,10 @@
 // </copyright>
 //------------------------------------------------------------------------------
 
-using System;
-using System.ComponentModel.Design;
-using System.Globalization;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using System;
+using System.ComponentModel.Design;
 
 namespace VSToDoList.UI.MainWindow
 {
@@ -56,9 +55,11 @@ namespace VSToDoList.UI.MainWindow
                 var menuCommandID = new CommandID(CommandSet, CommandId);
                 var menuItem = new MenuCommand(this.ShowToolWindow, menuCommandID);
                 commandService.AddCommand(menuItem);
-            }
 
-            //var shellService = this.ServiceProvider.GetService(typeof(SVsUIShell)) as IVsUIShell5;
+                var addTaskMenuCommandId = new CommandID(CommandSet, AddTaskCommandId);
+                var addTaskMenuItem = new MenuCommand(new EventHandler(OnAddTaskButtonClicked), addTaskMenuCommandId);
+                commandService.AddCommand(addTaskMenuItem);
+            }
         }
 
         /// <summary>
@@ -108,19 +109,16 @@ namespace VSToDoList.UI.MainWindow
 
             IVsWindowFrame windowFrame = (IVsWindowFrame)window.Frame;
             Microsoft.VisualStudio.ErrorHandler.ThrowOnFailure(windowFrame.Show());
-
-            //OleMenuCommandService commandService = this.ServiceProvider.GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
-            //if (commandService != null)
-            //{
-            //    var addTaskMenuCommandId = new CommandID(CommandSet, AddTaskCommandId);
-            //    var addTaskMenuItem = new MenuCommand(new EventHandler(OnAddTaskButtonClicked), addTaskMenuCommandId);
-            //    commandService.AddCommand(addTaskMenuItem);
-            //}
         }
 
-        void OnAddTaskButtonClicked(object sender, EventArgs e)
+        private void OnAddTaskButtonClicked(object sender, EventArgs e)
         {
-
+            ToolWindowPane window = this.package.FindToolWindow(typeof(ToDoListWindow), 0, false);
+            var todoLisWindow = window.Content as ToDoListWindowControl;
+            if (todoLisWindow != null)
+            {
+                todoLisWindow.OnToolbarAddTaskButtonClicked();
+            }
         }
     }
 }

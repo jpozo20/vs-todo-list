@@ -15,7 +15,7 @@
              Name="thisWindow"
              DataContext="{Binding RelativeSource={RelativeSource Self}}">
     <UserControl.Resources>
-        <view:ToDoListWindowViewModel x:Key="ViewModel"/>
+        <view:ToDoListWindowViewModel x:Key="ViewModel" />
         <converters:ControlSizeConverter x:Key="SizeConverter" />
         <!--<Style TargetType="TreeViewItem" BasedOn="{StaticResource {x:Type TreeViewItem}}" x:Key="TreeViewItemFullWidthStyle">
             <Setter Property="HorizontalContentAlignment" Value="Center" />
@@ -25,9 +25,9 @@
                         <StackPanel>
                             <Grid>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"  />
-                                    <ColumnDefinition Width="100*"/>
-                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="100*" />
+                                    <ColumnDefinition Width="1*" />
                                 </Grid.ColumnDefinitions>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" />
@@ -37,7 +37,7 @@
         <!--
                              Note that the following do not work, but I believe the top 2 should?!-->
         <!--
-                                <ToggleButton IsChecked="{Binding Path=IsExpanded, RelativeSource={RelativeSource TemplatedParent}}" 
+                                <ToggleButton IsChecked="{Binding Path=IsExpanded, RelativeSource={RelativeSource TemplatedParent}}"
                                               ClickMode="Press" Name="Expander">
                                     <ToggleButton.Style>
                                         <Style TargetType="ToggleButton">
@@ -91,7 +91,7 @@
                                                 ContentTemplate="{TemplateBinding HeaderedContentControl.HeaderTemplate}"
                                                 ContentStringFormat="{TemplateBinding HeaderedItemsControl.HeaderStringFormat}"
                                                 ContentTemplateSelector="{TemplateBinding HeaderedItemsControl.HeaderTemplateSelector}"
-                                                ContentSource="Header"              
+                                                ContentSource="Header"
                                                 HorizontalAlignment="{TemplateBinding Control.HorizontalContentAlignment}"
                                                 SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
                                 </Border>
@@ -144,14 +144,16 @@
         </Style>-->
     </UserControl.Resources>
 
-    <Grid DataContext="{StaticResource ViewModel}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" MouseUp="Grid_MouseUp">
-        <TreeView x:Name="myTreeView" Background="{DynamicResource VsBrush.Window}"
-                  ItemsSource="{Binding Path=TasksList,Mode=TwoWay}" HorizontalAlignment="Stretch" 
-                  ScrollViewer.HorizontalScrollBarVisibility="Disabled" PreviewMouseDoubleClick="TreeView_OnPreviewMouseDoubleClick">
+    <Grid DataContext="{StaticResource ViewModel}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" MouseUp="OnGridMouseUp">
+        <TreeView x:Name="TasksTreeView" Background="{DynamicResource VsBrush.Window}"
+                  ItemsSource="{Binding Path=TasksList,Mode=TwoWay}" HorizontalAlignment="Stretch"
+                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                  PreviewMouseDoubleClick="TreeView_OnPreviewMouseDoubleClick">
             <TreeView.Resources>
 
                 <!-- The Visual Studio color used in the Solution Explorer-->
-                <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="{DynamicResource {x:Static vsp:TreeViewColors.SelectedItemInactiveColorKey}}"  />
+                <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}"
+                                 Color="{DynamicResource {x:Static vsp:TreeViewColors.SelectedItemInactiveColorKey}}" />
 
                 <!-- The Visual Studio color for the Tool Windows Text-->
                 <SolidColorBrush x:Key="ToolWindowText" Color="{DynamicResource VsBrush.ToolWindowText}" />
@@ -159,7 +161,7 @@
 
             <!---->
             <TreeView.ItemTemplate>
-                <HierarchicalDataTemplate DataType="{x:Type models:Task}" ItemsSource="{Binding SubTasks,Mode=TwoWay}">
+                <HierarchicalDataTemplate DataType="{x:Type models:Task}" ItemsSource="{Binding Path=SubTasks,Mode=TwoWay}">
                     <Grid Margin="1,0,1,0"
                         Width="{Binding RelativeSource={RelativeSource AncestorType=TreeViewItem},Path=ActualWidth,Converter={StaticResource SizeConverter}}">
                         <Grid.ColumnDefinitions>
@@ -170,39 +172,39 @@
                         </Grid.ColumnDefinitions>
                         <CheckBox IsChecked="{Binding IsDone,Mode=TwoWay}" Grid.Column="0" VerticalAlignment="Center" />
                         <controls:EditBox x:Name="taskBox" Value="{Binding Name}" Foreground="{DynamicResource VsBrush.ToolWindowText}"  Grid.Column="1" VerticalAlignment="Center" Margin="1,0,0,2" />
-                        <Button HorizontalAlignment="Right" Grid.Column="2" Background="Transparent" Command="{Binding Source={StaticResource ViewModel},Path=AddNewTaskCommand}"
+                        <Button HorizontalAlignment="Right" Grid.Column="2" Background="Transparent" Click="OnTreeViewItemAddTaskButtonClicked"
                                             BorderBrush="Transparent" ToolTip="Add new task">
-                            <Image Source="/VsToDoList;component/Resources/plus.png" Width="16" Height="16"/>
+                            <Image Source="/VsToDoList;component/Resources/plus.png" Width="16" Height="16" />
                         </Button>
                         <Button HorizontalAlignment="Right" Grid.Column="3" Background="Transparent" Margin="3,0,0,0" Click="OnRemoveItemClicked"
                                             BorderBrush="Transparent" ToolTip="Delete task and its children">
-                            <Image Source="/VsToDoList;component/Resources/minus.png" Width="16" Height="16"/>
+                            <Image Source="/VsToDoList;component/Resources/minus.png" Width="16" Height="16" />
                         </Button>
                     </Grid>
-    <HierarchicalDataTemplate.ItemTemplate>
-        <DataTemplate>
-            <Grid Width="{Binding RelativeSource={RelativeSource AncestorType=TreeViewItem},Path=ActualWidth,Converter={StaticResource SizeConverter}}">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                <CheckBox IsChecked="{Binding IsDone,Mode=TwoWay}" Grid.Column="0" VerticalAlignment="Center" />
-                <controls:EditBox Value="{Binding Name}" Foreground="{DynamicResource VsBrush.ToolWindowText}" Grid.Column="1" VerticalAlignment="Center" Margin="1,0,0,2"/>
-                <Button HorizontalAlignment="Right" Grid.Column="2" Background="Transparent" Command="{Binding Source={StaticResource ViewModel},Path=AddNewTaskCommand}"
-                                        BorderBrush="Transparent" ToolTip="Add new task">
-                    <Image Source="/VsToDoList;component/Resources/plus.png" Width="16" Height="16"/>
-                </Button>
-                <Button HorizontalAlignment="Right" Grid.Column="3" Background="Transparent" Margin="3,0,0,0" Click="OnRemoveItemClicked"
-                                        BorderBrush="Transparent" ToolTip="Delete task and its children">
-                    <Image Source="/VsToDoList;component/Resources/minus.png" Width="16" Height="16"/>
-                </Button>
-            </Grid>
-        </DataTemplate>
-    </HierarchicalDataTemplate.ItemTemplate>
-    </HierarchicalDataTemplate>
-    </TreeView.ItemTemplate>
-    </TreeView>
+                    <!--<HierarchicalDataTemplate.ItemTemplate>
+                        <DataTemplate DataType="{x:Type models:Task}">
+                            <Grid Width="{Binding RelativeSource={RelativeSource AncestorType=TreeViewItem},Path=ActualWidth,Converter={StaticResource SizeConverter}}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <CheckBox IsChecked="{Binding IsDone,Mode=TwoWay}" Grid.Column="0" VerticalAlignment="Center" />
+                                <controls:EditBox Value="{Binding Name}" Foreground="{DynamicResource VsBrush.ToolWindowText}" Grid.Column="1" VerticalAlignment="Center" Margin="1,0,0,2" />
+                                <Button HorizontalAlignment="Right" Grid.Column="2" Background="Transparent" Click="OnTreeViewItemAddTaskButtonClicked"
+                                                        BorderBrush="Transparent" ToolTip="Add new task">
+                                    <Image Source="/VsToDoList;component/Resources/plus.png" Width="16" Height="16" />
+                                </Button>
+                                <Button HorizontalAlignment="Right" Grid.Column="3" Background="Transparent" Margin="3,0,0,0" Click="OnRemoveItemClicked"
+                                                        BorderBrush="Transparent" ToolTip="Delete task and its children">
+                                    <Image Source="/VsToDoList;component/Resources/minus.png" Width="16" Height="16" />
+                                </Button>
+                            </Grid>
+                        </DataTemplate>
+                    </HierarchicalDataTemplate.ItemTemplate>-->
+            </HierarchicalDataTemplate>
+            </TreeView.ItemTemplate>
+        </TreeView>
     </Grid>
 </UserControl>

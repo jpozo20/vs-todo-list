@@ -17,7 +17,6 @@ namespace VSToDoList.Controls
     ///     displayed in a TextBox that provides editing capbability. When
     ///     the EditBox is in normal, its content is displayed in a TextBlock
     ///     that is not editable.
-    ///     This control is designed to be used in with a GridView View.
     /// </summary>
     public class EditBox : Control
     {
@@ -45,6 +44,7 @@ namespace VSToDoList.Controls
             var textBlock = GetTemplateChild("PART_TextBlockPart") as TextBlock;
             Debug.Assert(textBlock != null, "No TextBlock!");
 
+            // Adorn the TextBlock with a TextBox
             _textBox = new TextBox();
             _adorner = new EditBoxAdorner(textBlock, _textBox);
             var layer = AdornerLayer.GetAdornerLayer(textBlock);
@@ -54,22 +54,21 @@ namespace VSToDoList.Controls
             _textBox.LostKeyboardFocus +=
                 OnTextBoxLostKeyboardFocus;
 
-            //Receive notification of the event to handle the column
-            //resize.
+            //Receive notification of the event to handle the column resize.
             HookTemplateParentResizeEvent();
 
             //Capture the resize event to  handle TreeView resize cases.
             HookItemsControlEvents();
 
             _treeViewItem = GetDependencyObjectFromVisualTree(this, typeof(TreeViewItem)) as TreeViewItem;
-            if (_treeViewItem != null) _treeViewItem.LostKeyboardFocus += _listViewItem_LostKeyboardFocus;
+            if (_treeViewItem != null) _treeViewItem.LostKeyboardFocus += OnTreeViewItemLostKeyboardFocus;
 
             Debug.Assert(_treeViewItem != null, "No ListViewItem found");
         }
 
-        private void _listViewItem_LostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+        public void SetEditMode(bool isInEditMode)
         {
-            _isSelectionActive = false;
+            IsInEditMode = isInEditMode;
         }
 
         #endregion Public Methods
@@ -85,9 +84,9 @@ namespace VSToDoList.Controls
         protected override void OnMouseEnter(MouseEventArgs e)
         {
             base.OnMouseEnter(e);
-            if (!IsEditing && IsItemSelected)
+            if (!IsInEditMode && IsItemSelected)
             {
-                _canBeEdit = true;
+                _canEdit = true;
             }
         }
 
@@ -100,7 +99,7 @@ namespace VSToDoList.Controls
         {
             base.OnMouseLeave(e);
             _isMouseWithinScope = false;
-            _canBeEdit = false;
+            _canEdit = false;
         }
 
         /// <summary>
@@ -122,15 +121,15 @@ namespace VSToDoList.Controls
                 e.ChangedButton == MouseButton.Middle)
                 return;
 
-            if (!IsEditing)
+            if (!IsInEditMode)
             {
-                if (!e.Handled && (_canBeEdit || _isMouseWithinScope))
+                if (!e.Handled && (_canEdit || _isMouseWithinScope))
                 {
                     // Enable the EditMode only on DoubeClick or
                     // on Click after the item has been selected
                     if (_treeViewItem.IsKeyboardFocusWithin && _isSelectionActive)
                     {
-                        IsEditing = true;
+                        IsInEditMode = true;
                         _isSelectionActive = false;
                     }
                 }
@@ -173,14 +172,14 @@ namespace VSToDoList.Controls
 
         #endregion Value
 
-        #region IsEditing
+        #region IsInEditMode
 
         /// <summary>
         ///     IsEditingProperty DependencyProperty
         /// </summary>
-        public static DependencyProperty IsEditingProperty =
+        public static DependencyProperty IsInEditModeProperty =
             DependencyProperty.Register(
-                "IsEditing",
+                "IsInEditMode",
                 typeof(bool),
                 typeof(EditBox),
                 new FrameworkPropertyMetadata(false));
@@ -188,17 +187,17 @@ namespace VSToDoList.Controls
         /// <summary>
         ///     Returns true if the EditBox control is in editing mode.
         /// </summary>
-        public bool IsEditing
+        public bool IsInEditMode
         {
-            get { return (bool)GetValue(IsEditingProperty); }
+            get { return (bool)GetValue(IsInEditModeProperty); }
             private set
             {
-                SetValue(IsEditingProperty, value);
+                SetValue(IsInEditModeProperty, value);
                 _adorner.UpdateVisibilty(value);
             }
         }
 
-        #endregion IsEditing
+        #endregion IsInEditMode
 
         #region IsParentSelected
 
@@ -228,11 +227,11 @@ namespace VSToDoList.Controls
         /// </summary>
         private void OnTextBoxKeyDown(object sender, KeyEventArgs e)
         {
-            if (IsEditing && (e.Key == Key.Enter || e.Key == Key.F2))
+            if (IsInEditMode && (e.Key == Key.Enter || e.Key == Key.F2))
             {
-                IsEditing = false;
+                IsInEditMode = false;
                 _isSelectionActive = false;
-                _canBeEdit = false;
+                _canEdit = false;
             }
         }
 
@@ -243,7 +242,12 @@ namespace VSToDoList.Controls
         private void OnTextBoxLostKeyboardFocus(object sender,
             KeyboardFocusChangedEventArgs e)
         {
-            IsEditing = false;
+            IsInEditMode = false;
+            _isSelectionActive = false;
+        }
+
+        private void OnTreeViewItemLostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+        {
             _isSelectionActive = false;
         }
 
@@ -254,7 +258,7 @@ namespace VSToDoList.Controls
         private void OnCouldSwitchToNormalMode(object sender,
             RoutedEventArgs e)
         {
-            IsEditing = false;
+            IsInEditMode = false;
         }
 
         /// <summary>
@@ -284,10 +288,10 @@ namespace VSToDoList.Controls
         /// </summary>
         private void OnScrollViewerChanged(object sender, RoutedEventArgs args)
         {
-            if (IsEditing && Mouse.PrimaryDevice.LeftButton ==
+            if (IsInEditMode && Mouse.PrimaryDevice.LeftButton ==
                 MouseButtonState.Pressed)
             {
-                IsEditing = false;
+                IsInEditMode = false;
             }
         }
 
@@ -338,7 +342,7 @@ namespace VSToDoList.Controls
         //Specifies whether an EditBox can switch to editing mode.
         //Set to true if the ListViewItem that contains the EditBox is
         //selected, when the mouse pointer moves over the EditBox
-        private bool _canBeEdit;
+        private bool _canEdit;
 
         //Specifies whether an EditBox can switch to editing mode.
         //Set to true when the ListViewItem that contains the EditBox is

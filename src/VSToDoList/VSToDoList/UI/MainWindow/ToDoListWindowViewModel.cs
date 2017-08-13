@@ -1,10 +1,7 @@
 ﻿using GalaSoft.MvvmLight.Command;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
 using VSToDoList.BL.Base;
+using VSToDoList.BL.Helpers;
 using VSToDoList.Models;
 
 namespace VSToDoList.UI.MainWindow
@@ -20,7 +17,6 @@ namespace VSToDoList.UI.MainWindow
             _tasksList.Add(task);
         }
 
-
         private ObservableCollection<ITask> _tasksList;
 
         public ObservableCollection<ITask> TasksList
@@ -34,27 +30,33 @@ namespace VSToDoList.UI.MainWindow
         }
 
         private RelayCommand<ITask> _addNewTaskCommand;
+
         public RelayCommand<ITask> AddNewTaskCommand
         {
             get
             {
                 if (_addNewTaskCommand == null)
-                    _addNewTaskCommand = new RelayCommand<ITask>((task)=>AddNewTask(task));
+                    _addNewTaskCommand = new RelayCommand<ITask>((task) => AddNewTask(task));
                 return _addNewTaskCommand;
             }
         }
 
-        void AddNewTask(ITask parentTask)
+        private void AddNewTask(ITask parentTask)
         {
-            
-            var evenHandler = new PropertyChangedEventHandler(parentTask.OnChildItemPropertyChanged);
             var task = new Task();
-            task.PropertyChanged += evenHandler;
-            parentTask.SubTasks.Add(task);
 
+            if (parentTask != null)
+            {
+                parentTask.SubTasks.Add(task);
+            }
+            else
+            {
+                TasksList.Add(task);
+            }
         }
 
         private RelayCommand<ITask> _removeTaskCommand;
+
         public RelayCommand<ITask> RemoveTaskCommand
         {
             get
@@ -65,18 +67,16 @@ namespace VSToDoList.UI.MainWindow
             }
         }
 
-        void RemoveTask(ITask taskToRemove)
+        private void RemoveTask(ITask taskToRemove)
         {
-            var parentTask = TasksList.FirstOrDefault(x => x.SubTasks.Contains(taskToRemove));
-            if(parentTask!=null)
+            var parentTask = TaskHelper.FindParentTask(TasksList, taskToRemove);
+            if (parentTask != null)
             {
-                ((Task)taskToRemove).PropertyChanged -= parentTask.OnChildItemPropertyChanged;
                 parentTask.SubTasks.Remove(taskToRemove);
                 return;
             }
 
             TasksList.Remove(taskToRemove);
         }
-
     }
 }

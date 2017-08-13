@@ -54,7 +54,7 @@ namespace VSToDoList.Controls
             InvalidateMeasure();
         }
 
-        #endregion
+        #endregion Public Methods
 
         #region Protected Methods
 
@@ -64,13 +64,12 @@ namespace VSToDoList.Controls
         protected override Size MeasureOverride(Size constraint)
         {
             _textBox.IsEnabled = _isVisible;
-            //if in editing mode, measure the space the adorner element 
+            //if in editing mode, measure the space the adorner element
             //should cover.
             if (_isVisible)
             {
                 AdornedElement.Measure(constraint);
                 _textBox.Measure(constraint);
-                
 
                 // Gets the ActualWidth of the EditBox so the TextBox
                 // doesn't cover further than the TextBlock and the buttons
@@ -79,8 +78,7 @@ namespace VSToDoList.Controls
                 var editBox = adornedElement.TemplatedParent as Control;
                 var actualWdith = editBox.ActualWidth;
 
-                
-                return new Size(actualWdith,_textBox.DesiredSize.Height);
+                return new Size(actualWdith, _textBox.DesiredSize.Height);
             }
             return new Size(0, 0);
         }
@@ -112,7 +110,7 @@ namespace VSToDoList.Controls
         /// </summary>
         protected override Visual GetVisualChild(int index) => _visualChildren[index];
 
-        #endregion
+        #endregion Protected Methods
 
         #region Private Methods
 
@@ -122,7 +120,6 @@ namespace VSToDoList.Controls
         /// </summary>
         private void BuildTextBox()
         {
-
             //_textBox.Background = EnvironmentColors
             _canvas = new Canvas();
             _canvas.Children.Add(_textBox);
@@ -151,7 +148,7 @@ namespace VSToDoList.Controls
             if (_isVisible) _textBox.Focus();
         }
 
-        #endregion
+        #endregion Private Methods
 
         #region Private Variables
 
@@ -164,15 +161,16 @@ namespace VSToDoList.Controls
         // Whether the EditBox is in editing mode which means the Adorner is visible.
         private bool _isVisible;
 
-        // Canvas that contains the TextBox that provides the ability for it to 
+        // Canvas that contains the TextBox that provides the ability for it to
         // display larger than the current size of the cell so that the entire
         // contents of the cell can be edited
         private Canvas _canvas;
 
         // Extra padding for the content when it is displayed in the TextBox
         private const double ExtraWidth = 15;
+
         private const double ExcessWidth = 45;
 
-        #endregion
+        #endregion Private Variables
     }
 }

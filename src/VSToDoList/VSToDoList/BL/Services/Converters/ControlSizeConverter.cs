@@ -21,7 +21,7 @@ namespace VSToDoList.BL.Services.Converters
             throw new NotImplementedException();
         }
 
-        #endregion
+        #endregion IValueConverter Members
 
         public double LeftMargin { get; set; }
         public double RightMargin { get; set; }
