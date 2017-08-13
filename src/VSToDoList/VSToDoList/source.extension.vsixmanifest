@@ -4,17 +4,20 @@
     <Identity Id="efffb498-1b5d-4fdf-a672-0cf505a0a22c" Version="0.1" Language="en-US" Publisher="Jefry Pozo" />
     <DisplayName>VSToDoList</DisplayName>
     <Description xml:space="preserve">A Visual Studio extension for handling tasks and to-dos inside Visual Studio and avoid context switching when using an external program.</Description>
-    <MoreInfo>https://github.com/jpozo20/vs-todo-liss</MoreInfo>
+    <MoreInfo>https://github.com/jpozo20/vs-todo-list</MoreInfo>
+    <ReleaseNotes>Initial version</ReleaseNotes>
+    <Icon>Resources\Icon.png</Icon>
+    <PreviewImage>Resources\Preview.png</PreviewImage>
+    <Tags>VS,Visual Studio, To-do,todo,task,tasks</Tags>
   </Metadata>
   <Installation>
-    <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[14.0,15.0]" />
+    <InstallationTarget Version="[12.0,16.0)" Id="Microsoft.VisualStudio.Pro" />
   </Installation>
   <Dependencies>
     <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.5,)" />
-    <Dependency Id="Microsoft.VisualStudio.MPF.12.0" DisplayName="Visual Studio MPF 12.0" d:Source="Installed" Version="[14.0,13.0)" />
   </Dependencies>
   <Prerequisites>
-    <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[14.0,16.0)" DisplayName="Visual Studio core editor" />
+    <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[15.0,16.0)" DisplayName="Visual Studio core editor" />
   </Prerequisites>
   <Assets>
     <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />

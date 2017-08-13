@@ -11,10 +11,6 @@ namespace VSToDoList.UI.MainWindow
         public ToDoListWindowViewModel()
         {
             TasksList = new ObservableCollection<ITask>();
-            var task = new Task();
-            task.Name = "Parent task";
-            task.SubTasks.Add(new Task() { Name = "Child Task" });
-            _tasksList.Add(task);
         }
 
         private ObservableCollection<ITask> _tasksList;
