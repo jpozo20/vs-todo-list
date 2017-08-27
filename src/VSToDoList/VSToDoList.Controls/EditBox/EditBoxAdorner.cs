@@ -28,7 +28,7 @@ namespace VSToDoList.Controls
     internal sealed class EditBoxAdorner : Adorner
     {
         /// <summary>
-        ///     Inialize the EditBoxAdorner.
+        ///     Initialize the EditBoxAdorner.
         /// </summary>
         public EditBoxAdorner(UIElement adornedElement, UIElement adorningElement) : base(adornedElement)
         {
@@ -165,11 +165,6 @@ namespace VSToDoList.Controls
         // display larger than the current size of the cell so that the entire
         // contents of the cell can be edited
         private Canvas _canvas;
-
-        // Extra padding for the content when it is displayed in the TextBox
-        private const double ExtraWidth = 15;
-
-        private const double ExcessWidth = 45;
 
         #endregion Private Variables
     }
