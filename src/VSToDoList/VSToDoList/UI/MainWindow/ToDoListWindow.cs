@@ -37,7 +37,6 @@ namespace VSToDoList.UI.MainWindow
             // the object returned by the Content property.
             this.Content = new ToDoListWindowControl();
             this.ToolBar = new System.ComponentModel.Design.CommandID((ToDoListWindowCommand.CommandSet), ToDoListWindowCommand.ToolbarID);
-            //this.ToolBarLocation = (int)VSTWT_LOCATION.VSTWT_TOP;
         }
     }
 }
