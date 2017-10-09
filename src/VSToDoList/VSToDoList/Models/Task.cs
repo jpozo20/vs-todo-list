@@ -42,7 +42,8 @@ namespace VSToDoList.Models
             }
             set
             {
-                _name = value; OnPropertyChanged();
+                _name = value;
+                OnPropertyChanged();
             }
         }
 
@@ -90,7 +91,11 @@ namespace VSToDoList.Models
         public TaskStatus Status
         {
             get { return _taskStatus; }
-            set { _taskStatus = value; OnPropertyChanged(); }
+            set
+            {
+                _taskStatus = value;
+                OnPropertyChanged();
+            }
         }
 
         /// <summary>
@@ -164,7 +169,7 @@ namespace VSToDoList.Models
         }
 
         /// <summary>
-        /// Update the Status of a Task when one of its Substaks changes its Status 
+        /// Update the Status of a Task when one of its Substaks changes its Status
         /// When a task is Semi-done, will put a minus sign on its CheckBox
         /// EDIT: Will use the default windows style that puts a little box in the checkbox
         /// </summary>

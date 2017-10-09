@@ -5,9 +5,11 @@
 //------------------------------------------------------------------------------
 
 using Microsoft.VisualStudio.Shell;
+using Newtonsoft.Json;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
+using VSToDoList.BL.Helpers;
 
 namespace VSToDoList
 {
@@ -29,7 +31,7 @@ namespace VSToDoList
     /// </para>
     /// </remarks>
     [PackageRegistration(UseManagedResourcesOnly = true)]
-    [InstalledProductRegistration("#110", "#112", "0.2.0", IconResourceID = 400)] // Info on this package for Help/About
+    [InstalledProductRegistration("#110", "#112", "0.2.1", IconResourceID = 400)] // Info on this package for Help/About
     [Guid(VSTodoListPackage.PackageGuidString)]
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
     [ProvideMenuResource("Menus.ctmenu", 1)]
@@ -61,7 +63,32 @@ namespace VSToDoList
         protected override void Initialize()
         {
             base.Initialize();
+            ConfigureJsonSerializer();
             VSToDoList.UI.MainWindow.ToDoListWindowCommand.Initialize(this);
+
+            // Add the Service provider to the common instances for later reuse
+            ApplicationCommons.Instances.ServiceProvider = this;
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            // If the package is being unloaded or Visual Studio is closing, unregister from Solution events
+            if (ApplicationCommons.Instances.SolutionService != null && ApplicationCommons.Instances.SolutionServiceCookie != 0)
+            {
+                ApplicationCommons.Instances.SolutionService.UnadviseSolutionEvents(ApplicationCommons.Instances.SolutionServiceCookie);
+                ApplicationCommons.Instances.SolutionService = null;
+            }
+        }
+
+        private void ConfigureJsonSerializer()
+        {
+            var jsonConfig = new JsonSerializerSettings();
+            jsonConfig.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+            jsonConfig.Formatting = Formatting.Indented;
+            jsonConfig.TypeNameHandling = TypeNameHandling.Auto;
+            JsonConvert.DefaultSettings = () => jsonConfig;
         }
 
         #endregion Package Members

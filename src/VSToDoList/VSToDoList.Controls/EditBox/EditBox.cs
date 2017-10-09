@@ -51,15 +51,13 @@ namespace VSToDoList.Controls
             layer.Add(_adorner);
 
             _textBox.KeyDown += OnTextBoxKeyDown;
-            _textBox.LostKeyboardFocus +=
-                OnTextBoxLostKeyboardFocus;
+            _textBox.LostKeyboardFocus += OnTextBoxLostKeyboardFocus;
 
             //Receive notification of the event to handle the column resize.
             HookTemplateParentResizeEvent();
 
             //Capture the resize event to  handle TreeView resize cases.
             HookItemsControlEvents();
-
             _treeViewItem = GetDependencyObjectFromVisualTree(this, typeof(TreeViewItem)) as TreeViewItem;
             if (_treeViewItem != null) _treeViewItem.LostKeyboardFocus += OnTreeViewItemLostKeyboardFocus;
 
@@ -154,7 +152,7 @@ namespace VSToDoList.Controls
         /// <summary>
         ///     ValueProperty DependencyProperty.
         /// </summary>
-        public static readonly DependencyProperty ValueProperty =
+        public static DependencyProperty ValueProperty =
             DependencyProperty.Register(
                 "Value",
                 typeof(object),
@@ -216,6 +214,77 @@ namespace VSToDoList.Controls
         }
 
         #endregion IsParentSelected
+
+        #region TextDecoration
+
+        /// <summary>
+        /// Dependency property for the <see cref="TextDecoration"/>
+        /// Currently it is based on the status of the task.
+        /// If the task is Done then <seealso cref="TextDecorationCollection"/> will be <seealso cref="TextDecorations.Strikethrough"/>
+        /// Otherwise, the TextDecoration will be removed by setting it to null.
+        /// </summary>
+        public static DependencyProperty TextDecorationProperty =
+                 DependencyProperty.Register(
+                            "TextDecoration",
+                            typeof(TextDecorationCollection),
+                            typeof(EditBox),
+                            new FrameworkPropertyMetadata(
+                                null,
+                                FrameworkPropertyMetadataOptions.AffectsRender,
+                                OnTextDecorationPropertyChanged,
+                                OnCoerceTextDecorationValue
+                                )
+                     );
+
+        /// <summary>
+        /// Decoration for the Task name Textblock text. Currently it is based on the status of the task.
+        /// If the task is Done then <seealso cref="TextDecorationCollection"/> will be <seealso cref="TextDecorations.Strikethrough"/>
+        /// Otherwise, the TextDecoration will be removed by setting it to null.
+        /// </summary>
+        public TextDecorationCollection TextDecoration
+        {
+            get { return (TextDecorationCollection)GetValue(TextDecorationProperty); }
+            set { SetValue(TextDecorationProperty, value); }
+        }
+
+        /// <summary>
+        /// Handler for the CoerceValue event. This is called whenever the TextDecoration is set.
+        /// Here will be the logic to handle the TextDecoration value.
+        /// </summary>
+        /// <param name="sender">The sender of the coerce. Should be <see cref="EditBox"/>.</param>
+        /// <param name="baseValue">The value set to coerce. This will fire whenever the value is set, not just when it changes.</param>
+        /// <returns></returns>
+        private static object OnCoerceTextDecorationValue(DependencyObject sender, object baseValue)
+        {
+            if (baseValue == null || !(baseValue is TextDecorationCollection)) return null;
+            return baseValue as TextDecorationCollection;
+        }
+
+        /// <summary>
+        /// Handle TextDecoration accordingly after coercing the value.
+        /// </summary>
+        /// <param name="sender">Should be the EditBox</param>
+        /// <param name="eventArgs">Arguments of the event, namely Old an New values.</param>
+        private static void OnTextDecorationPropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs eventArgs)
+        {
+            var editBox = sender as EditBox;
+            if (editBox == null) return;
+            if (editBox._adorner == null) return; //The adorner is null when the tasks are loaded from disk
+
+            var textBlock = editBox._adorner.AdornedElement as TextBlock;
+            if (textBlock == null) return;
+
+            if (eventArgs.NewValue == null)
+            {
+                textBlock.TextDecorations = null;
+            }
+            else
+            {
+                textBlock.TextDecorations = (TextDecorationCollection)eventArgs.NewValue;
+            }
+        }
+
+        #endregion TextDecoration
 
         #endregion Public Properties
 
@@ -332,7 +401,7 @@ namespace VSToDoList.Controls
 
         #endregion Private Methods
 
-        #region private variable
+        #region Private variables
 
         private EditBoxAdorner _adorner;
 
@@ -358,6 +427,6 @@ namespace VSToDoList.Controls
         //A flag for correctly handling the TreeViewItem selection
         private bool _isSelectionActive;
 
-        #endregion private variable
+        #endregion Private variables
     }
 }
