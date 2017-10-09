@@ -45,6 +45,8 @@ namespace VSToDoList.BL.Helpers
         public static void SetTaskItemInEditMode(TreeViewItem treeViewItem)
         {
             var contentPresenter = (FrameworkElement)treeViewItem.Template.FindName("PART_Header", treeViewItem);
+            if (contentPresenter == null) return;
+
             var grid = (Grid)VisualTreeHelper.GetChild(contentPresenter, 0);
             var editBox = (EditBox)grid.Children[1];
             editBox.SetEditMode(true);
