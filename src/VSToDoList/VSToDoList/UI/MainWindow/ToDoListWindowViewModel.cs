@@ -21,7 +21,11 @@ namespace VSToDoList.UI.MainWindow
             _solutionEventsListener.SolutionClosingCallback = SaveTasks;
             _solutionEventsListener.SolutionOpenedCallback = LoadTasks;
 
+            // Attempt to load the solution tasks when the tool window
+            // wasn't active at VS startup, otherwise just use the event listener
+            LoadTasks(); 
             StartListeningToSolutionEvents();
+            
         }
 
         void StartListeningToSolutionEvents()
@@ -30,10 +34,11 @@ namespace VSToDoList.UI.MainWindow
             if (solution == null) return;
 
             uint cookie;
-            solution.AdviseSolutionEvents(_solutionEventsListener,out cookie);
+            solution.AdviseSolutionEvents(_solutionEventsListener, out cookie);
             ApplicationCommons.Instances.SolutionServiceCookie = cookie;
             ApplicationCommons.Instances.SolutionService = solution;
         }
+        
         private EnvDTE.DTE _dte;
         private readonly ITaskService _taskService;
         private readonly ISolutionEventsListener _solutionEventsListener;
