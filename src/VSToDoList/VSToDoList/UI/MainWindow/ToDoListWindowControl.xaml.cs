@@ -67,6 +67,19 @@
             }
         }
 
+        private RelayCommand _editTaskCommand;
+        public RelayCommand EditTaskCommand
+        {
+            get
+            {
+                if (_editTaskCommand == null)
+                {
+                    _editTaskCommand = new RelayCommand(SetTaskInEditMode);
+                }
+                return _editTaskCommand;
+            }
+        }
+
         #endregion Properties
 
         #region Task Methods
@@ -271,6 +284,13 @@
             FocusAndSetTreeViewItemInEditMode(treeViewItem);
         }
 
+        private void SetTaskInEditMode()
+        {
+            var focusedElement = Keyboard.FocusedElement;
+            if (focusedElement is TextBox) return;
+
+            TreeViewHelper.SetTaskItemInEditMode((TreeViewItem)focusedElement);
+        }
         #endregion TreeView and TaskItem Events
 
         #region Window Events

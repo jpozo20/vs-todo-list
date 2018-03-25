@@ -21,6 +21,7 @@
         <converters:TaskStatusToTextDecorationConverter x:Key="TextDecorationConverter"/>
     </UserControl.Resources>
     <UserControl.InputBindings>
+        <KeyBinding Key="Return" Command="{Binding Path=EditTaskCommand,RelativeSource={RelativeSource AncestorType=UserControl}}"/>
         <KeyBinding Key="Return" Modifiers="Ctrl" Command="{Binding Path=AddTaskBelowCommand,RelativeSource={RelativeSource AncestorType=UserControl}}"/>
         <KeyBinding Key="Return" Modifiers="Ctrl+Shift" Command="{Binding Path=AddSubTaskBelowCommand,RelativeSource={RelativeSource AncestorType=UserControl}}"/>
         <KeyBinding Key="Delete" Modifiers="Ctrl" Command="{Binding Path=DeleteTaskCommand,RelativeSource={RelativeSource AncestorType=UserControl}}"/>
