@@ -28,7 +28,7 @@ There are four shorcuts available to ease the use of the tool window
   * Fixed some bugs
   * Added the ability to save and load tasks on a solution basis
   * Tasks marked as Done will have a strikethrough decoration
-  * 
+  
 * v0.2.0
   * When a child task is marked as done, its parent will update its status accordingly. And vice-versa, when a parent task is marked as done, all child tasks will be marked as done
   * If a task has multiple childs, and only one of them is marked done, then the parent task will be marked as semi-done or half-done
