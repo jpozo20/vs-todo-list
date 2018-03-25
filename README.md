@@ -7,11 +7,21 @@ This is a Visual Studio extension for handling tasks and to-dos inside Visual St
 
 The tool is available on the View -> Other Windows menu
 
+## Shorcuts
+There are four shorcuts to ease the use of the tool window
+* **Ctrl**+**T**,then **N** for adding  a new task to the tasks list
+* **Ctrl**+**Enter** on a selected task to add a new task under the same parent
+* **Ctrl**+**Shift**+**Enter** on a selected task to add a nested task or subtask
+* **Enter** on a selected task to enter edit mode
+
 ## Screenshots
 
 ![ScreenShot-1](https://i1.visualstudiogallery.msdn.s-msft.com/3a791b9b-7dcc-4b19-bdc3-4bbd7f3c1061/image/file/275206/1/screenshot-1.png)
 
 ## Changelog
+* v0.3.0
+  * Fixed a bug where the incorrect task would get the focus after deleting a task
+  * Added shorcuts for adding, editing and deleting tasks 
 * v0.2.2
   * Fixed a bug when tasks would not load if the tool window wasn't active at the startup of VS
 * v0.2.1
