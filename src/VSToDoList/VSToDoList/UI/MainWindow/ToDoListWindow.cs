@@ -1,10 +1,4 @@
-﻿//------------------------------------------------------------------------------
-// <copyright file="ToDoListWindow.cs" company="Company">
-//     Copyright (c) Company.  All rights reserved.
-// </copyright>
-//------------------------------------------------------------------------------
-
-namespace VSToDoList.UI.MainWindow
+﻿namespace VSToDoList.UI.MainWindow
 {
     using Microsoft.VisualStudio.Shell;
     using System;

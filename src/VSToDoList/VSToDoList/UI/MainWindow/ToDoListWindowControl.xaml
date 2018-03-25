@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:models="clr-namespace:VSToDoList.Models"
-             xmlns:view="clr-namespace:VSToDoList.UI.MainWindow"
+             xmlns:viewModels="clr-namespace:VSToDoList.UI.MainWindow.ViewModels"
              xmlns:controls="clr-namespace:VSToDoList.Controls;assembly=VSToDoList.Controls"
              xmlns:converters="clr-namespace:VSToDoList.BL.Services.Converters"
              xmlns:vsp="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.14.0"
@@ -15,7 +15,7 @@
              Name="thisWindow"
              DataContext="{Binding RelativeSource={RelativeSource Self}}">
     <UserControl.Resources>
-        <view:ToDoListWindowViewModel x:Key="ViewModel" />
+        <viewModels:ToDoListWindowViewModel x:Key="ViewModel" />
         <converters:ControlSizeConverter x:Key="SizeConverter" />
         <converters:TaskStatusToBooleanConverter x:Key="StatusConverter"/>
         <converters:TaskStatusToTextDecorationConverter x:Key="TextDecorationConverter"/>

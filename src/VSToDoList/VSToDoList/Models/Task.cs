@@ -185,7 +185,7 @@ namespace VSToDoList.Models
                 if (SubTasks.All(task => task.Status == TaskStatus.Done))
                 {
                     this.Status = TaskStatus.Done;
-                };
+                }
                 if (SubTasks.All(task => task.Status == TaskStatus.NotDone))
                 {
                     this.Status = TaskStatus.NotDone;

@@ -1,16 +1,11 @@
-﻿//------------------------------------------------------------------------------
-// <copyright file="ToDoListWindowControl.xaml.cs"
-//     Copyright (c) Company.  All rights reserved.
-// </copyright>
-//------------------------------------------------------------------------------
-
-namespace VSToDoList.UI.MainWindow
+﻿namespace VSToDoList.UI.MainWindow
 {
     using System.Reflection;
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Input;
     using VSToDoList.BL.Helpers;
+    using VSToDoList.UI.MainWindow.ViewModels;
 
     public partial class ToDoListWindowControl : UserControl
     {
@@ -101,5 +96,6 @@ namespace VSToDoList.UI.MainWindow
         {
             e.Handled = true;
         }
+
     }
 }

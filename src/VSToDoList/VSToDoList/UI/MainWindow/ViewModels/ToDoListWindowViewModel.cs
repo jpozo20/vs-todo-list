@@ -8,7 +8,7 @@ using VSToDoList.BL.Helpers;
 using VSToDoList.BL.Services.TaskServices;
 using VSToDoList.Models;
 
-namespace VSToDoList.UI.MainWindow
+namespace VSToDoList.UI.MainWindow.ViewModels
 {
     public class ToDoListWindowViewModel : NotifiesPropertyChanged
     {

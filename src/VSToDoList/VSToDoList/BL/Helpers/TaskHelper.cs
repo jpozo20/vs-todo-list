@@ -4,7 +4,7 @@ using VSToDoList.Models;
 
 namespace VSToDoList.BL.Helpers
 {
-    public class TaskHelper
+    public static class TaskHelper
     {
         /// <summary>
         /// Recursively search for a  Task's parent in a Tasks collection

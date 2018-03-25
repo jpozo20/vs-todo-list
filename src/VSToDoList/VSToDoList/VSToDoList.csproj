@@ -77,7 +77,7 @@
     <Compile Include="UI\MainWindow\ToDoListWindowControl.xaml.cs">
       <DependentUpon>ToDoListWindowControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\MainWindow\ToDoListWindowViewModel.cs" />
+    <Compile Include="UI\MainWindow\ViewModels\ToDoListWindowViewModel.cs" />
     <Compile Include="VSTodoListPackage.cs" />
   </ItemGroup>
   <ItemGroup>

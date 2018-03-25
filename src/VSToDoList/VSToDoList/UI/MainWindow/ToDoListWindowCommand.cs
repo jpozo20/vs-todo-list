@@ -1,10 +1,4 @@
-﻿//------------------------------------------------------------------------------
-// <copyright file="ToDoListWindowCommand.cs" company="Company">
-//     Copyright (c) Company.  All rights reserved.
-// </copyright>
-//------------------------------------------------------------------------------
-
-using Microsoft.VisualStudio.Shell;
+﻿using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using System;
 using System.ComponentModel.Design;
