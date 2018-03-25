@@ -7,8 +7,8 @@ This is a Visual Studio extension for handling tasks and to-dos inside Visual St
 
 The tool is available on the View -> Other Windows menu
 
-## Shorcuts
-There are four shorcuts to ease the use of the tool window
+### Shorcuts
+There are four shorcuts available to ease the use of the tool window
 * **Ctrl**+**T**,then **N** for adding  a new task to the tasks list
 * **Ctrl**+**Enter** on a selected task to add a new task under the same parent
 * **Ctrl**+**Shift**+**Enter** on a selected task to add a nested task or subtask
