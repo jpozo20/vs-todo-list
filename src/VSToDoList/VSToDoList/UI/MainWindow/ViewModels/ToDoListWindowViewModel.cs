@@ -62,7 +62,7 @@ namespace VSToDoList.UI.MainWindow.ViewModels
             get
             {
                 if (_addNewTaskCommand == null)
-                    _addNewTaskCommand = new RelayCommand<ITask>((task) => AddNewTask(task));
+                    _addNewTaskCommand = new RelayCommand<ITask>(task => AddNewTask(task));
                 return _addNewTaskCommand;
             }
         }

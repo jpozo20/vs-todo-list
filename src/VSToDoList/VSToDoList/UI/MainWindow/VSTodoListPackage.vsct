@@ -92,6 +92,11 @@
     </Bitmaps>
   </Commands>
 
+  <KeyBindings>
+    <KeyBinding guid="guidVSTodoListPackageCmdSet" id="cmdIdAddTask"
+        key1="T" mod1="CONTROL SHIFT" key2="N" editor="guidVSStd97" />
+  </KeyBindings>
+
   <Symbols>
     <!-- This is the package guid. -->
     <GuidSymbol name="guidVSTodoListPackage" value="{d8b2716d-918d-47ad-8938-706d983d9d6c}" />

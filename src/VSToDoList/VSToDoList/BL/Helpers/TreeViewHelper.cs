@@ -51,5 +51,36 @@ namespace VSToDoList.BL.Helpers
             var editBox = (EditBox)grid.Children[1];
             editBox.SetEditMode(true);
         }
+
+        /// <summary>
+        /// Finds whether a <see cref="TreeViewItem"/> is a child element of another. Outputs the parent if true.
+        /// </summary>
+        /// <param name="inputElement">The element to find if is a child element or not</param>
+        /// <param name="parentTreeViewItem">Outputs the parent element if the element if a child</param>
+        /// <returns></returns>
+        public static bool IsTreeViewItemAChild(IInputElement inputElement, out TreeViewItem parentTreeViewItem)
+        {
+            parentTreeViewItem = null;
+
+            var inputControl = inputElement as Control;
+            if (inputControl == null) return false;
+
+            var parentControl = VisualTreeHelper.GetParent(inputControl) as FrameworkElement;
+            if (parentControl == null) return false;
+
+            var grandParentControl = VisualTreeHelper.GetParent(parentControl) as FrameworkElement;
+            if (grandParentControl == null) return false;
+
+            var grandGrandParentControl = VisualTreeHelper.GetParent(grandParentControl) as FrameworkElement;
+            if (grandGrandParentControl == null) return false;
+
+            if (grandGrandParentControl is Grid)
+            {
+                parentTreeViewItem = VisualTreeHelper.GetParent(grandGrandParentControl) as TreeViewItem;
+                return true;
+            }
+
+            return false;
+        }
     }
 }
