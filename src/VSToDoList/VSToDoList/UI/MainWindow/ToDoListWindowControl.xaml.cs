@@ -1,13 +1,12 @@
 ﻿namespace VSToDoList.UI.MainWindow
 {
     using GalaSoft.MvvmLight.Command;
+    using System.Linq;
     using System.Reflection;
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Input;
-    using System.Windows.Media;
     using VSToDoList.BL.Helpers;
-    using VSToDoList.Controls;
     using VSToDoList.Models;
     using VSToDoList.UI.MainWindow.ViewModels;
 
@@ -23,9 +22,11 @@
         }
 
         #region Properties
+
         public ToDoListWindowViewModel ViewModel => (ToDoListWindowViewModel)Resources["ViewModel"];
 
         private RelayCommand _addTaskBelowItemCommand;
+
         public RelayCommand AddTaskBelowCommand
         {
             get
@@ -39,6 +40,7 @@
         }
 
         private RelayCommand _addSubTaskBelowItemCommand;
+
         public RelayCommand AddSubTaskBelowCommand
         {
             get
@@ -52,6 +54,7 @@
         }
 
         private RelayCommand _deleteTaskCommand;
+
         public RelayCommand DeleteTaskCommand
         {
             get
@@ -63,13 +66,15 @@
                 return _deleteTaskCommand;
             }
         }
-        #endregion
+
+        #endregion Properties
 
         #region Task Methods
+
         /// <summary>
         /// Adds a new task to the tasks list
         /// </summary>
-        void AddNewTaskToMainTaskList()
+        private void AddNewTaskToMainTaskList()
         {
             ViewModel.AddNewTaskCommand.Execute(null);
 
@@ -82,24 +87,58 @@
         /// <summary>
         /// Deletes the currently selected task and all of it childrens
         /// </summary>
-        void DeleteFocusedTask()
+        private void DeleteFocusedTask()
         {
             var focusedElement = Keyboard.FocusedElement;
             if (focusedElement is TextBox) return; //If the TextBox has the focus, do nothing
 
-            var messageResult = MessageBox.Show("Are you sure you want to delete the task?", "To-Do List",
-                MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            TreeViewItem parentTreeViewItem = null;
+            var treeViewItem = focusedElement as TreeViewItem;
+            var isChild = TreeViewHelper.IsTreeViewItemAChild(treeViewItem, out parentTreeViewItem);
+            var task = treeViewItem.Header as ITask;
 
-            if (messageResult == MessageBoxResult.Yes)
+            if (string.IsNullOrEmpty(task.Name))
             {
-                var treeViewItem = focusedElement as TreeViewItem;
-                var task = treeViewItem.Header as ITask;
                 ViewModel.RemoveTaskCommand.Execute(task);
+                FocusNextItemAfterDeletion(parentTreeViewItem, isChild);
+            }
+            else
+            {
+                var messageResult = MessageBox.Show("Are you sure you want to delete the task?", "To-Do List",
+                    MessageBoxButton.YesNo, MessageBoxImage.Warning);
+
+                if (messageResult == MessageBoxResult.Yes)
+                {
+                    ViewModel.RemoveTaskCommand.Execute(task);
+                    FocusNextItemAfterDeletion(parentTreeViewItem, isChild);
+                }
             }
         }
-        #endregion
+
+        void FocusNextItemAfterDeletion(TreeViewItem parentTreeViewItem, bool isChild)
+        {
+            if (isChild)
+            {
+                if (!parentTreeViewItem.HasItems) return;
+                var lastIndex = parentTreeViewItem.Items.Count - 1;
+                var lastChild = parentTreeViewItem.ItemContainerGenerator.ContainerFromIndex(lastIndex);
+                if (lastChild == null) return;
+                Keyboard.Focus((TreeViewItem)lastChild);
+            }
+            else
+            {
+                if (!TasksTreeView.HasItems) return;
+                var lastIndex = TasksTreeView.Items.Count - 1;
+                var lastChild = TasksTreeView.ItemContainerGenerator.ContainerFromIndex(lastIndex);
+                if (lastChild == null) return;
+                Keyboard.Focus((TreeViewItem)lastChild);
+            }
+        }
+
+        #endregion Task Methods
 
         #region TreeView and TaskItem Events
+
         /// <summary>
         /// Event fired when the Add Task button is clicked, or the shorcut is used
         /// </summary>
@@ -125,7 +164,7 @@
         }
 
         /// <summary>
-        /// Event raised when the Add Task button of a task is clicked 
+        /// Event raised when the Add Task button of a task is clicked
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -143,10 +182,30 @@
             FocusAndSetTreeViewItemInEditMode(parentTreeViewItem);
         }
 
-        private void OnRemoveItemClicked(object sender, System.Windows.RoutedEventArgs e)
+        private void OnTreeViewItemDeleteTaskButtonClicked(object sender, System.Windows.RoutedEventArgs e)
         {
-            var task = TreeViewHelper.GetTaskFromTreeViewItemTaskButton(sender as Control);
-            ViewModel.RemoveTaskCommand.Execute(task);
+            TreeViewItem parentTreeViewItem = null;
+            var senderControl = sender as Control;
+            var treeViewItem = TreeViewHelper.GetTreeViewItemFromTreeViewItemTaskButton(senderControl);
+            var isChild = TreeViewHelper.IsTreeViewItemAChild(treeViewItem, out parentTreeViewItem);
+            var task = treeViewItem.Header as ITask;
+
+            if (string.IsNullOrEmpty(task.Name))
+            {
+                ViewModel.RemoveTaskCommand.Execute(task);
+                FocusNextItemAfterDeletion(parentTreeViewItem, isChild);
+            }
+            else
+            {
+                var messageResult = MessageBox.Show("Are you sure you want to delete the task?", "To-Do List",
+                    MessageBoxButton.YesNo, MessageBoxImage.Warning);
+
+                if (messageResult == MessageBoxResult.Yes)
+                {
+                    ViewModel.RemoveTaskCommand.Execute(task);
+                    FocusNextItemAfterDeletion(parentTreeViewItem, isChild);
+                }
+            }
         }
 
         private void FocusAndSetTreeViewItemInEditMode(TreeViewItem parentTreeViewItem)
@@ -210,11 +269,12 @@
 
             ViewModel.AddNewTaskCommand.Execute(task);
             FocusAndSetTreeViewItemInEditMode(treeViewItem);
-
         }
-        #endregion
+
+        #endregion TreeView and TaskItem Events
 
         #region Window Events
+
         /// <summary>
         /// Remove the ActiveItemSelection from the TreeView when clicking outside it
         /// </summary>
@@ -233,6 +293,7 @@
         {
             e.Handled = true;
         }
-        #endregion
+
+        #endregion Window Events
     }
 }

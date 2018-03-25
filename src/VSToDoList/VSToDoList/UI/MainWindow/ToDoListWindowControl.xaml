@@ -51,18 +51,19 @@
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <CheckBox IsChecked="{Binding Status,Converter={StaticResource StatusConverter}}" Grid.Column="0" VerticalAlignment="Center"/>
+                        <CheckBox IsChecked="{Binding Status,Converter={StaticResource StatusConverter}}" Grid.Column="0" VerticalAlignment="Center" Focusable="False"/>
                         <controls:EditBox x:Name="taskBox" Value="{Binding Name,Mode=TwoWay}" TextDecoration="{Binding Status,Converter={StaticResource TextDecorationConverter},Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" 
                                           Foreground="{DynamicResource VsBrush.ToolWindowText}"  
-                                          Grid.Column="1" VerticalAlignment="Center" Margin="1,0,0,2">
+                                          Grid.Column="1" VerticalAlignment="Center" Margin="1,0,0,2"
+                                          Focusable="False">
                         </controls:EditBox>
                             
                         <Button HorizontalAlignment="Right" Grid.Column="2" Background="Transparent" Click="OnTreeViewItemAddTaskButtonClicked"
-                                            BorderBrush="Transparent" ToolTip="Add new task">
+                                            BorderBrush="Transparent" ToolTip="Add new task" Focusable="False">
                             <Image Source="/VsToDoList;component/Resources/plus.png" Width="16" Height="16" />
                         </Button>
-                        <Button HorizontalAlignment="Right" Grid.Column="3" Background="Transparent" Margin="3,0,0,0" Click="OnRemoveItemClicked"
-                                            BorderBrush="Transparent" ToolTip="Delete task and its children">
+                        <Button HorizontalAlignment="Right" Grid.Column="3" Background="Transparent" Margin="3,0,0,0" Click="OnTreeViewItemDeleteTaskButtonClicked"
+                                            BorderBrush="Transparent" ToolTip="Delete task and its children" Focusable="False">
                             <Image Source="/VsToDoList;component/Resources/minus.png" Width="16" Height="16" />
                         </Button>
                     </Grid>
