@@ -107,27 +107,37 @@ namespace VSToDoList.UI.MainWindow.ViewModels
 
         /// <summary>
         /// Gets the solution name and saves the tasks related to that solution
-        /// Data is saved to %AppData%/VsToDoList/{solutionname}.tasks
+        /// Data is saved to {SolutionRoot}/{solutionname}.tasks
         /// </summary>
         private void SaveTasks()
         {
-            var solutionName = GetSolutionName();
-            if (solutionName == null) return;
+            var solutionFullName = GetSolutionFullName();
+            if (string.IsNullOrWhiteSpace(solutionFullName)) return;
 
-            _taskService.SaveTasks(solutionName, TasksList.ToList());
+            var solutionName = Path.GetFileNameWithoutExtension(solutionFullName);
+            var solutionFolderPath = Path.GetDirectoryName(solutionFullName);
+            if (string.IsNullOrWhiteSpace(solutionFullName) || string.IsNullOrWhiteSpace(solutionFolderPath)) return;
+
+
+            _taskService.SaveTasks(solutionName, solutionFolderPath, TasksList.ToList());
             TasksList.Clear();
         }
 
         /// <summary>
         /// Gets the solution name and loads the tasks related to that solution
-        /// Data is loaded from %AppData%/VsToDoList/{solutionname}.tasks
+        /// Data is loaded from {SolutionRoot}/{solutionname}.tasks
         /// </summary>
         private void LoadTasks()
         {
-            var solutionName = GetSolutionName();
-            if (string.IsNullOrWhiteSpace(solutionName)) return;
+            var solutionFullName = GetSolutionFullName();
+            if (string.IsNullOrWhiteSpace(solutionFullName)) return;
 
-            var tasks = _taskService.LoadTasks(solutionName);
+            var solutionName = Path.GetFileNameWithoutExtension(solutionFullName);
+            var solutionFolderPath = Path.GetDirectoryName(solutionFullName);
+            if (string.IsNullOrWhiteSpace(solutionFullName) || string.IsNullOrWhiteSpace(solutionFolderPath)) return;
+            
+
+            var tasks = _taskService.LoadTasks(solutionName, solutionFolderPath);
             if (tasks != null && tasks.Count > 0)
             {
                 foreach (var task in tasks)
@@ -141,16 +151,14 @@ namespace VSToDoList.UI.MainWindow.ViewModels
         /// Uses the EnvDTE service to get the name of the currently loaded solution
         /// </summary>
         /// <returns></returns>
-        string GetSolutionName()
+        string GetSolutionFullName()
         {
             _dte = ApplicationCommons.Services.GetEnvDTE();
             if (_dte == null) return string.Empty;
 
-            var solutionPath = _dte.Solution.FileName;
-            if (string.IsNullOrWhiteSpace(solutionPath)) return string.Empty;
-
-            var solutionName = Path.GetFileNameWithoutExtension(solutionPath);
-            return solutionName;
+            var solutionFullName = _dte.Solution.FullName;
+            if (string.IsNullOrWhiteSpace(solutionFullName)) return string.Empty;
+            return solutionFullName;
         }
     }
 }

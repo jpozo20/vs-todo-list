@@ -7,9 +7,9 @@ namespace VSToDoList.BL.Services.TaskServices
 {
     public interface ITaskService
     {
-        void SaveTasks(string solutionName, ICollection<Models.ITask> tasks);
+        void SaveTasks(string solutionName, string solutionFolderPath, ICollection<Models.ITask> tasks);
 
-        ICollection<Models.ITask> LoadTasks(string solutionName);
+        ICollection<Models.ITask> LoadTasks(string solutionName, string solutionFolderPath);
     }
 
     public class TaskService : ITaskService
@@ -17,12 +17,12 @@ namespace VSToDoList.BL.Services.TaskServices
         private const string FolderName = "VSToDoList";
         private const string Extension = ".tasks";
 
-        public ICollection<Models.ITask> LoadTasks(string solutionName)
+        public ICollection<Models.ITask> LoadTasks(string solutionName, string solutionFolderPath)
         {
             ICollection<Models.ITask> tasks = new List<Models.ITask>();
             try
             {
-                var path = GetFinalJsonPath(solutionName);
+                var path = GetFinalJsonPath(solutionName, solutionFolderPath);
                 var json = File.ReadAllText(path);
                 if (!string.IsNullOrWhiteSpace(json))
                 {
@@ -38,10 +38,10 @@ namespace VSToDoList.BL.Services.TaskServices
             }
         }
 
-        void ITaskService.SaveTasks(string solutionName, ICollection<Models.ITask> tasks)
+        void ITaskService.SaveTasks(string solutionName, string solutionFolderPath, ICollection<Models.ITask> tasks)
         {
             var json = Newtonsoft.Json.JsonConvert.SerializeObject(tasks);
-            var path = GetFinalJsonPath(solutionName);
+            var path = GetFinalJsonPath(solutionName, solutionFolderPath);
             try
             {
                 File.WriteAllText(path, json);
@@ -52,12 +52,9 @@ namespace VSToDoList.BL.Services.TaskServices
             }
         }
 
-        private string GetFinalJsonPath(string solutionName)
+        private string GetFinalJsonPath(string solutionName, string solutionFolderPath)
         {
-            var applicationDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            var vsToDoListPath = Path.Combine(applicationDataPath, FolderName);
-            if (!Directory.Exists(vsToDoListPath)) Directory.CreateDirectory(vsToDoListPath);
-            var solutionTasksPath = Path.Combine(vsToDoListPath, solutionName + Extension);
+            var solutionTasksPath = Path.Combine(solutionFolderPath, solutionName + Extension);
             return solutionTasksPath;
         }
     }
