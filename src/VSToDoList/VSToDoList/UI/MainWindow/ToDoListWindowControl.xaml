@@ -31,7 +31,8 @@
         <TreeView x:Name="TasksTreeView" Background="{DynamicResource VsBrush.Window}"
                   ItemsSource="{Binding Path=TasksList,Mode=TwoWay}" HorizontalAlignment="Stretch"
                   ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                  PreviewMouseDoubleClick="TreeView_OnPreviewMouseDoubleClick">
+                  PreviewMouseDoubleClick="TreeView_OnPreviewMouseDoubleClick"
+                  AllowDrop="True">
             <TreeView.Resources>
 
                 <!-- The Visual Studio color used in the Solution Explorer-->
@@ -45,7 +46,8 @@
             <TreeView.ItemTemplate>
                 <HierarchicalDataTemplate DataType="{x:Type models:Task}" ItemsSource="{Binding Path=SubTasks,Mode=TwoWay}">
                     <Grid Margin="1,0,1,0"
-                        Width="{Binding RelativeSource={RelativeSource AncestorType=TreeViewItem},Path=ActualWidth,Converter={StaticResource SizeConverter}}">
+                        Width="{Binding RelativeSource={RelativeSource AncestorType=TreeViewItem},Path=ActualWidth,Converter={StaticResource SizeConverter}}"
+                        >
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
@@ -56,7 +58,9 @@
                         <controls:EditBox x:Name="taskBox" Value="{Binding Name,Mode=TwoWay}" TextDecoration="{Binding Status,Converter={StaticResource TextDecorationConverter},Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" 
                                           Foreground="{DynamicResource VsBrush.ToolWindowText}"  
                                           Grid.Column="1" VerticalAlignment="Center" Margin="1,0,0,2"
-                                          Focusable="False">
+                                          Focusable="False"
+                                          PreviewMouseLeftButtonDown="TaskBox_PreviewMouseLeftButtonDown"
+                                          PreviewMouseMove="TaskBox_PreviewMouseMove">
                         </controls:EditBox>
                             
                         <Button HorizontalAlignment="Right" Grid.Column="2" Background="Transparent" Click="OnTreeViewItemAddTaskButtonClicked"

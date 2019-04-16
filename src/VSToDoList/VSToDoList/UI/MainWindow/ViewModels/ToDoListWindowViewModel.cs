@@ -12,33 +12,32 @@ namespace VSToDoList.UI.MainWindow.ViewModels
 {
     public class ToDoListWindowViewModel : NotifiesPropertyChanged
     {
-
         public ToDoListWindowViewModel()
         {
             TasksList = new ObservableCollection<ITask>();
             _taskService = new TaskService();
-            _solutionEventsListener = new SolutionEventsListener();
-            _solutionEventsListener.SolutionClosingCallback = SaveTasks;
-            _solutionEventsListener.SolutionOpenedCallback = LoadTasks;
+            _solutionEventsListener = new SolutionEventsListener
+            {
+                SolutionClosingCallback = SaveTasks,
+                SolutionOpenedCallback = LoadTasks
+            };
 
             // Attempt to load the solution tasks when the tool window
             // wasn't active at VS startup, otherwise just use the event listener
-            LoadTasks(); 
+            LoadTasks();
             StartListeningToSolutionEvents();
-            
         }
 
-        void StartListeningToSolutionEvents()
+        private void StartListeningToSolutionEvents()
         {
-            var solution = ApplicationCommons.Services.GetVsSolutionService();
+            IVsSolution solution = ApplicationCommons.Services.GetVsSolutionService();
             if (solution == null) return;
 
-            uint cookie;
-            solution.AdviseSolutionEvents(_solutionEventsListener, out cookie);
+            solution.AdviseSolutionEvents(_solutionEventsListener, out uint cookie);
             ApplicationCommons.Instances.SolutionServiceCookie = cookie;
             ApplicationCommons.Instances.SolutionService = solution;
         }
-        
+
         private EnvDTE.DTE _dte;
         private readonly ITaskService _taskService;
         private readonly ISolutionEventsListener _solutionEventsListener;
@@ -69,7 +68,7 @@ namespace VSToDoList.UI.MainWindow.ViewModels
 
         private void AddNewTask(ITask parentTask)
         {
-            var task = new Task();
+            Task task = new Task();
 
             if (parentTask != null)
             {
@@ -95,7 +94,7 @@ namespace VSToDoList.UI.MainWindow.ViewModels
 
         private void RemoveTask(ITask taskToRemove)
         {
-            var parentTask = TaskHelper.FindParentTask(TasksList, taskToRemove);
+            ITask parentTask = TaskHelper.FindParentTask(TasksList, taskToRemove);
             if (parentTask != null)
             {
                 parentTask.SubTasks.Remove(taskToRemove);
@@ -106,18 +105,57 @@ namespace VSToDoList.UI.MainWindow.ViewModels
         }
 
         /// <summary>
+        /// Moves a task from a position into another position. It's used for drag and drop.
+        /// </summary>
+        /// <param name="current">The source task</param>
+        /// <param name="after">The target task</param>
+        public void MoveTask(ITask current, ITask after)
+        {
+            ITask currentParent = TaskHelper.FindParentTask(_tasksList, current);
+            ITask afterParent = TaskHelper.FindParentTask(_tasksList, after);
+            Move(currentParent, current, afterParent, after);
+        }
+
+        private void Move(ITask parentOfCurrent, ITask current, ITask parentOfAfter, ITask after)
+        {
+            if (parentOfCurrent == parentOfAfter)
+            {
+                // If they're both null it means neither of them has a parent
+                if (parentOfCurrent == null) TaskHelper.SwapItems(_tasksList, after, current);
+                else TaskHelper.SwapItems(parentOfCurrent.SubTasks, after, current);
+            }
+            else if (parentOfCurrent != null && parentOfAfter == null)
+            {
+                int afterIndex = _tasksList.IndexOf(after);
+                _tasksList.Insert(afterIndex, current);
+                parentOfCurrent.SubTasks.Remove(current);
+            }
+            else if (parentOfCurrent == null && parentOfAfter != null)
+            {
+                int afterIndex = parentOfAfter.SubTasks.IndexOf(after);
+                parentOfAfter.SubTasks.Insert(afterIndex, current);
+                _tasksList.Remove(current);
+            }
+            else
+            {
+                int afterIndex = parentOfAfter.SubTasks.IndexOf(after);
+                parentOfAfter.SubTasks.Insert(afterIndex, current);
+                parentOfCurrent.SubTasks.Remove(current);
+            }
+        }
+
+        /// <summary>
         /// Gets the solution name and saves the tasks related to that solution
         /// Data is saved to {SolutionRoot}/{solutionname}.tasks
         /// </summary>
         private void SaveTasks()
         {
-            var solutionFullName = GetSolutionFullName();
+            string solutionFullName = GetSolutionFullName();
             if (string.IsNullOrWhiteSpace(solutionFullName)) return;
 
-            var solutionName = Path.GetFileNameWithoutExtension(solutionFullName);
-            var solutionFolderPath = Path.GetDirectoryName(solutionFullName);
+            string solutionName = Path.GetFileNameWithoutExtension(solutionFullName);
+            string solutionFolderPath = Path.GetDirectoryName(solutionFullName);
             if (string.IsNullOrWhiteSpace(solutionFullName) || string.IsNullOrWhiteSpace(solutionFolderPath)) return;
-
 
             _taskService.SaveTasks(solutionName, solutionFolderPath, TasksList.ToList());
             TasksList.Clear();
@@ -129,18 +167,17 @@ namespace VSToDoList.UI.MainWindow.ViewModels
         /// </summary>
         private void LoadTasks()
         {
-            var solutionFullName = GetSolutionFullName();
+            string solutionFullName = GetSolutionFullName();
             if (string.IsNullOrWhiteSpace(solutionFullName)) return;
 
-            var solutionName = Path.GetFileNameWithoutExtension(solutionFullName);
-            var solutionFolderPath = Path.GetDirectoryName(solutionFullName);
+            string solutionName = Path.GetFileNameWithoutExtension(solutionFullName);
+            string solutionFolderPath = Path.GetDirectoryName(solutionFullName);
             if (string.IsNullOrWhiteSpace(solutionFullName) || string.IsNullOrWhiteSpace(solutionFolderPath)) return;
-            
 
-            var tasks = _taskService.LoadTasks(solutionName, solutionFolderPath);
+            System.Collections.Generic.ICollection<ITask> tasks = _taskService.LoadTasks(solutionName, solutionFolderPath);
             if (tasks != null && tasks.Count > 0)
             {
-                foreach (var task in tasks)
+                foreach (ITask task in tasks)
                 {
                     TasksList.Add(task);
                 }
@@ -151,12 +188,12 @@ namespace VSToDoList.UI.MainWindow.ViewModels
         /// Uses the EnvDTE service to get the name of the currently loaded solution
         /// </summary>
         /// <returns></returns>
-        string GetSolutionFullName()
+        private string GetSolutionFullName()
         {
             _dte = ApplicationCommons.Services.GetEnvDTE();
             if (_dte == null) return string.Empty;
 
-            var solutionFullName = _dte.Solution.FullName;
+            string solutionFullName = _dte.Solution.FullName;
             if (string.IsNullOrWhiteSpace(solutionFullName)) return string.Empty;
             return solutionFullName;
         }

@@ -1,7 +1,7 @@
 ﻿namespace VSToDoList.UI.MainWindow
 {
     using GalaSoft.MvvmLight.Command;
-    using System.Linq;
+    using System;
     using System.Reflection;
     using System.Windows;
     using System.Windows.Controls;
@@ -68,6 +68,7 @@
         }
 
         private RelayCommand _editTaskCommand;
+
         public RelayCommand EditTaskCommand
         {
             get
@@ -80,6 +81,10 @@
             }
         }
 
+        private Point _startPosition;
+        private bool _isDragging;
+        private object _currentTask;
+
         #endregion Properties
 
         #region Task Methods
@@ -91,8 +96,8 @@
         {
             ViewModel.AddNewTaskCommand.Execute(null);
 
-            var newTask = TasksTreeView.Items.GetItemAt(TasksTreeView.Items.Count - 1);
-            var treeViewItem = (TreeViewItem)TasksTreeView.ItemContainerGenerator.ContainerFromItem(newTask);
+            object newTask = TasksTreeView.Items.GetItemAt(TasksTreeView.Items.Count - 1);
+            TreeViewItem treeViewItem = (TreeViewItem)TasksTreeView.ItemContainerGenerator.ContainerFromItem(newTask);
             treeViewItem.IsSelected = true;
             treeViewItem.Loaded += OnTreeViewItemLoaded;
         }
@@ -102,13 +107,12 @@
         /// </summary>
         private void DeleteFocusedTask()
         {
-            var focusedElement = Keyboard.FocusedElement;
+            IInputElement focusedElement = Keyboard.FocusedElement;
             if (focusedElement is TextBox) return; //If the TextBox has the focus, do nothing
 
-            TreeViewItem parentTreeViewItem = null;
-            var treeViewItem = focusedElement as TreeViewItem;
-            var isChild = TreeViewHelper.IsTreeViewItemAChild(treeViewItem, out parentTreeViewItem);
-            var task = treeViewItem.Header as ITask;
+            TreeViewItem treeViewItem = focusedElement as TreeViewItem;
+            bool isChild = TreeViewHelper.IsTreeViewItemAChild(treeViewItem, out TreeViewItem parentTreeViewItem);
+            ITask task = treeViewItem.Header as ITask;
 
             if (string.IsNullOrEmpty(task.Name))
             {
@@ -117,7 +121,7 @@
             }
             else
             {
-                var messageResult = MessageBox.Show("Are you sure you want to delete the task?", "To-Do List",
+                MessageBoxResult messageResult = MessageBox.Show("Are you sure you want to delete the task?", "To-Do List",
                     MessageBoxButton.YesNo, MessageBoxImage.Warning);
 
                 if (messageResult == MessageBoxResult.Yes)
@@ -128,21 +132,21 @@
             }
         }
 
-        void FocusNextItemAfterDeletion(TreeViewItem parentTreeViewItem, bool isChild)
+        private void FocusNextItemAfterDeletion(TreeViewItem parentTreeViewItem, bool isChild)
         {
             if (isChild)
             {
                 if (!parentTreeViewItem.HasItems) return;
-                var lastIndex = parentTreeViewItem.Items.Count - 1;
-                var lastChild = parentTreeViewItem.ItemContainerGenerator.ContainerFromIndex(lastIndex);
+                int lastIndex = parentTreeViewItem.Items.Count - 1;
+                DependencyObject lastChild = parentTreeViewItem.ItemContainerGenerator.ContainerFromIndex(lastIndex);
                 if (lastChild == null) return;
                 Keyboard.Focus((TreeViewItem)lastChild);
             }
             else
             {
                 if (!TasksTreeView.HasItems) return;
-                var lastIndex = TasksTreeView.Items.Count - 1;
-                var lastChild = TasksTreeView.ItemContainerGenerator.ContainerFromIndex(lastIndex);
+                int lastIndex = TasksTreeView.Items.Count - 1;
+                DependencyObject lastChild = TasksTreeView.ItemContainerGenerator.ContainerFromIndex(lastIndex);
                 if (lastChild == null) return;
                 Keyboard.Focus((TreeViewItem)lastChild);
             }
@@ -169,7 +173,7 @@
         {
             if (sender != null)
             {
-                var treeViewItem = e.Source as TreeViewItem;
+                TreeViewItem treeViewItem = e.Source as TreeViewItem;
                 Keyboard.Focus(treeViewItem);
                 TreeViewHelper.SetTaskItemInEditMode(treeViewItem);
                 treeViewItem.Loaded -= OnTreeViewItemLoaded;
@@ -183,25 +187,24 @@
         /// <param name="e"></param>
         private void OnTreeViewItemAddTaskButtonClicked(object sender, RoutedEventArgs e)
         {
-            var senderControl = (Control)sender;
+            Control senderControl = (Control)sender;
 
             //First, add the new Task to the View
-            var task = TreeViewHelper.GetTaskFromTreeViewItemTaskButton(senderControl);
+            ITask task = TreeViewHelper.GetTaskFromTreeViewItemTaskButton(senderControl);
             ViewModel.AddNewTaskCommand.Execute(task);
 
             //Once the Task is added, get its TreeViewItem and add a Loaded EventHandler
             //So when the  TreeViewItem is rendered, focus it and set it in EditMode
-            var parentTreeViewItem = TreeViewHelper.GetTreeViewItemFromTreeViewItemTaskButton(senderControl);
+            TreeViewItem parentTreeViewItem = TreeViewHelper.GetTreeViewItemFromTreeViewItemTaskButton(senderControl);
             FocusAndSetTreeViewItemInEditMode(parentTreeViewItem);
         }
 
         private void OnTreeViewItemDeleteTaskButtonClicked(object sender, System.Windows.RoutedEventArgs e)
         {
-            TreeViewItem parentTreeViewItem = null;
-            var senderControl = sender as Control;
-            var treeViewItem = TreeViewHelper.GetTreeViewItemFromTreeViewItemTaskButton(senderControl);
-            var isChild = TreeViewHelper.IsTreeViewItemAChild(treeViewItem, out parentTreeViewItem);
-            var task = treeViewItem.Header as ITask;
+            Control senderControl = sender as Control;
+            TreeViewItem treeViewItem = TreeViewHelper.GetTreeViewItemFromTreeViewItemTaskButton(senderControl);
+            bool isChild = TreeViewHelper.IsTreeViewItemAChild(treeViewItem, out TreeViewItem parentTreeViewItem);
+            ITask task = treeViewItem.Header as ITask;
 
             if (string.IsNullOrEmpty(task.Name))
             {
@@ -210,7 +213,7 @@
             }
             else
             {
-                var messageResult = MessageBox.Show("Are you sure you want to delete the task?", "To-Do List",
+                MessageBoxResult messageResult = MessageBox.Show("Are you sure you want to delete the task?", "To-Do List",
                     MessageBoxButton.YesNo, MessageBoxImage.Warning);
 
                 if (messageResult == MessageBoxResult.Yes)
@@ -223,9 +226,9 @@
 
         private void FocusAndSetTreeViewItemInEditMode(TreeViewItem parentTreeViewItem)
         {
-            var newTask = parentTreeViewItem.Items.GetItemAt(parentTreeViewItem.Items.Count - 1);
+            object newTask = parentTreeViewItem.Items.GetItemAt(parentTreeViewItem.Items.Count - 1);
 
-            var newTreeViewItem = (TreeViewItem)parentTreeViewItem.ItemContainerGenerator.ContainerFromItem(newTask);
+            TreeViewItem newTreeViewItem = (TreeViewItem)parentTreeViewItem.ItemContainerGenerator.ContainerFromItem(newTask);
             if (newTreeViewItem == null)
             {
                 //When VirtualizingStackPanel.IsVirtualizing is True,
@@ -248,19 +251,17 @@
             // is a subtask and need to find the parent task. Otherwise, add the task to
             // the main tasks list.
 
-            TreeViewItem parentTreeViewItem;
-
-            var focusedItem = Keyboard.FocusedElement;
+            IInputElement focusedItem = Keyboard.FocusedElement;
             if (focusedItem is TextBox) return; //If the TextBox has the focus, do nothing
 
-            var isChild = TreeViewHelper.IsTreeViewItemAChild(focusedItem, out parentTreeViewItem);
+            bool isChild = TreeViewHelper.IsTreeViewItemAChild(focusedItem, out TreeViewItem parentTreeViewItem);
             if (!isChild)
             {
                 AddNewTaskToMainTaskList();
             }
             else
             {
-                var task = parentTreeViewItem.Header as ITask;
+                ITask task = parentTreeViewItem.Header as ITask;
                 if (task == null) return;
 
                 ViewModel.AddNewTaskCommand.Execute(task);
@@ -273,11 +274,11 @@
         /// </summary>
         private void AddSubTaskBelowItem()
         {
-            var focusedElement = Keyboard.FocusedElement;
+            IInputElement focusedElement = Keyboard.FocusedElement;
             if (focusedElement is TextBox) return; //If the TextBox has the focus, do nothing
 
-            var treeViewItem = focusedElement as TreeViewItem;
-            var task = treeViewItem.Header as ITask;
+            TreeViewItem treeViewItem = focusedElement as TreeViewItem;
+            ITask task = treeViewItem.Header as ITask;
             if (task == null) return;
 
             ViewModel.AddNewTaskCommand.Execute(task);
@@ -286,11 +287,12 @@
 
         private void SetTaskInEditMode()
         {
-            var focusedElement = Keyboard.FocusedElement;
+            IInputElement focusedElement = Keyboard.FocusedElement;
             if (focusedElement is TextBox) return;
 
             TreeViewHelper.SetTaskItemInEditMode((TreeViewItem)focusedElement);
         }
+
         #endregion TreeView and TaskItem Events
 
         #region Window Events
@@ -315,5 +317,93 @@
         }
 
         #endregion Window Events
+
+        private void TaskBox_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            _startPosition = e.GetPosition(null);
+        }
+
+        private void TaskBox_PreviewMouseMove(object sender, MouseEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed && !_isDragging)
+            {
+                Point currentPosition = e.GetPosition(null);
+                if (Math.Abs(currentPosition.X - _startPosition.X) > SystemParameters.MinimumHorizontalDragDistance
+                    || Math.Abs(currentPosition.Y - _startPosition.Y) > SystemParameters.MinimumVerticalDragDistance)
+                {
+                    StartDrag();
+                }
+            }
+        }
+
+        private void StartDrag()
+        {
+            FrameworkElement dragScope = (TasksTreeView.Parent as FrameworkElement);
+            dragScope.AllowDrop = true;
+            dragScope.PreviewDragOver += DragScope_PreviewDragOver;
+            dragScope.DragLeave += DragScope_PreviewDragLeave;
+            dragScope.Drop += DragScope_Drop;
+            _isDragging = true;
+
+            _currentTask = TasksTreeView.SelectedItem;
+            DataObject dataObject = new DataObject(DataFormats.Serializable, _currentTask);
+            DragDropEffects dropEffects = DragDrop.DoDragDrop(this.TasksTreeView, dataObject, DragDropEffects.Move);
+
+            dragScope.PreviewDragOver -= DragScope_PreviewDragOver;
+            dragScope.PreviewDragLeave -= DragScope_PreviewDragLeave;
+            dragScope.Drop -= DragScope_Drop;
+            _isDragging = false;
+        }
+
+        private void DragScope_Drop(object sender, DragEventArgs e)
+        {
+            // If the Task item is present, then move the item in tasklist
+            // otherwise cancel the drag
+            if (e.Data.GetDataPresent(DataFormats.Serializable))
+            {
+                object targetTask = (e.OriginalSource as FrameworkElement).DataContext;
+                var data = e.Data.GetData(DataFormats.Serializable);
+                ViewModel.MoveTask((ITask)_currentTask, (ITask)targetTask);
+                e.Effects = DragDropEffects.Move;
+            }
+            else
+            {
+                e.Effects = DragDropEffects.None;
+            }
+            
+            e.Handled = true;
+        }
+
+        private void DragScope_PreviewDragLeave(object sender, DragEventArgs e)
+        {
+            if (e.OriginalSource is Grid)
+            {
+                e.Effects = DragDropEffects.None;
+            }
+
+            e.Handled = true;
+        }
+
+        private void DragScope_PreviewDragOver(object sender, DragEventArgs e)
+        {
+            // Only allow the drag if it's into a different Task item
+            if(e.OriginalSource is TextBlock || e.OriginalSource is Border)
+            {
+                if(e.OriginalSource is FrameworkElement fe)
+                {
+                    if(fe.DataContext is Task && (fe.DataContext != _currentTask))
+                    {
+                        e.Effects = DragDropEffects.Move;
+                        e.Handled = true;
+                    }
+                    else
+                    {
+                        e.Effects = DragDropEffects.None;
+                    }
+                }
+            }
+
+            
+        }
     }
 }
