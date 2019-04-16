@@ -47,5 +47,15 @@ namespace VSToDoList.BL.Helpers
 
             return parentTask;
         }
+
+        public static void SwapItems(IList<ITask> list, ITask itemA, ITask itemB)
+        {
+            int indexA = list.IndexOf(itemA);
+            int indexB = list.IndexOf(itemB);
+
+            ITask temp = list[indexA];
+            list[indexA] = list[indexB];
+            list[indexB] = temp;
+        }
     }
 }
