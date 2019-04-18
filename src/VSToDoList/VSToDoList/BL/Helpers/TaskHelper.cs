@@ -48,14 +48,29 @@ namespace VSToDoList.BL.Helpers
             return parentTask;
         }
 
-        public static void SwapItems(IList<ITask> list, ITask itemA, ITask itemB)
+        /// <summary>
+        /// Inserts a given Task item after another one. It's used in the drag n drop operation.
+        /// </summary>
+        /// <param name="list">THe list containing all the task items</param>
+        /// <param name="toInsertAfterOf">The task where to insert the given item after of</param>
+        /// <param name="itemToInsert">The task to insert</param>
+        public static void InsertItemAfter(IList<ITask> list, ITask toInsertAfterOf, ITask itemToInsert)
         {
-            int indexA = list.IndexOf(itemA);
-            int indexB = list.IndexOf(itemB);
+            int insertIndex = list.IndexOf(toInsertAfterOf);
+            int removeIndex = list.IndexOf(itemToInsert);
 
-            ITask temp = list[indexA];
-            list[indexA] = list[indexB];
-            list[indexB] = temp;
+            if(insertIndex > removeIndex)
+            {
+                list.Insert(insertIndex + 1, itemToInsert);
+                list.RemoveAt(removeIndex);
+
+            }
+            else
+            {
+                list.Insert(insertIndex + 1, itemToInsert);
+                list.RemoveAt(removeIndex + 1);
+            }
+            
         }
     }
 }

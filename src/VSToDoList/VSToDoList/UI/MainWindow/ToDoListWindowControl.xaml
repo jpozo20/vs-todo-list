@@ -77,11 +77,10 @@
             <TreeView.ItemContainerStyle>
                 <Style TargetType="{x:Type TreeViewItem}">
                     <Style.Setters>
-                    
                         <!-- Set each task as Expanded on load    -->
-            <Setter Property="IsExpanded" Value="{Binding IsExpanded,Mode=TwoWay}"/>
-            </Style.Setters>
-            </Style>
+                        <Setter Property="IsExpanded" Value="{Binding IsExpanded,Mode=TwoWay}"/>
+                    </Style.Setters>
+                </Style>
             </TreeView.ItemContainerStyle>
         </TreeView>
     </Grid>

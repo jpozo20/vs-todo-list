@@ -121,25 +121,25 @@ namespace VSToDoList.UI.MainWindow.ViewModels
             if (parentOfCurrent == parentOfAfter)
             {
                 // If they're both null it means neither of them has a parent
-                if (parentOfCurrent == null) TaskHelper.SwapItems(_tasksList, after, current);
-                else TaskHelper.SwapItems(parentOfCurrent.SubTasks, after, current);
+                if (parentOfCurrent == null) TaskHelper.InsertItemAfter(_tasksList, after, current);
+                else TaskHelper.InsertItemAfter(parentOfCurrent.SubTasks, after, current);
             }
             else if (parentOfCurrent != null && parentOfAfter == null)
             {
                 int afterIndex = _tasksList.IndexOf(after);
-                _tasksList.Insert(afterIndex, current);
+                _tasksList.Insert(afterIndex + 1, current);
                 parentOfCurrent.SubTasks.Remove(current);
             }
             else if (parentOfCurrent == null && parentOfAfter != null)
             {
                 int afterIndex = parentOfAfter.SubTasks.IndexOf(after);
-                parentOfAfter.SubTasks.Insert(afterIndex, current);
+                parentOfAfter.SubTasks.Insert(afterIndex + 1, current);
                 _tasksList.Remove(current);
             }
             else
             {
                 int afterIndex = parentOfAfter.SubTasks.IndexOf(after);
-                parentOfAfter.SubTasks.Insert(afterIndex, current);
+                parentOfAfter.SubTasks.Insert(afterIndex + 1, current);
                 parentOfCurrent.SubTasks.Remove(current);
             }
         }

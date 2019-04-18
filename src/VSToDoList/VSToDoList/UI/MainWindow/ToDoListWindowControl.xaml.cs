@@ -6,6 +6,7 @@
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Input;
+    using System.Windows.Media;
     using VSToDoList.BL.Helpers;
     using VSToDoList.Models;
     using VSToDoList.UI.MainWindow.ViewModels;
@@ -17,8 +18,10 @@
         /// </summary>
         public ToDoListWindowControl()
         {
+            _dragTargetBackground = new SolidColorBrush(Color.FromArgb(180, 253, 153, 20));
             Assembly.Load("VSToDoList.Controls");
             this.InitializeComponent();
+            
         }
 
         #region Properties
@@ -84,6 +87,7 @@
         private Point _startPosition;
         private bool _isDragging;
         private object _currentTask;
+        private SolidColorBrush _dragTargetBackground;
 
         #endregion Properties
 
@@ -107,10 +111,9 @@
         /// </summary>
         private void DeleteFocusedTask()
         {
-            IInputElement focusedElement = Keyboard.FocusedElement;
-            if (focusedElement is TextBox) return; //If the TextBox has the focus, do nothing
+            TreeViewItem treeViewItem = GetFocusedItem();
+            if (treeViewItem == null) return;
 
-            TreeViewItem treeViewItem = focusedElement as TreeViewItem;
             bool isChild = TreeViewHelper.IsTreeViewItemAChild(treeViewItem, out TreeViewItem parentTreeViewItem);
             ITask task = treeViewItem.Header as ITask;
 
@@ -274,10 +277,9 @@
         /// </summary>
         private void AddSubTaskBelowItem()
         {
-            IInputElement focusedElement = Keyboard.FocusedElement;
-            if (focusedElement is TextBox) return; //If the TextBox has the focus, do nothing
+            TreeViewItem treeViewItem = GetFocusedItem();
+            if (treeViewItem == null) return;
 
-            TreeViewItem treeViewItem = focusedElement as TreeViewItem;
             ITask task = treeViewItem.Header as ITask;
             if (task == null) return;
 
@@ -362,15 +364,19 @@
             if (e.Data.GetDataPresent(DataFormats.Serializable))
             {
                 object targetTask = (e.OriginalSource as FrameworkElement).DataContext;
-                var data = e.Data.GetData(DataFormats.Serializable);
+                object data = e.Data.GetData(DataFormats.Serializable);
                 ViewModel.MoveTask((ITask)_currentTask, (ITask)targetTask);
                 e.Effects = DragDropEffects.Move;
+
+                UpdateTargetBackground(e.OriginalSource, Brushes.Transparent);
+                TreeViewItem treeViewItem = TreeViewHelper.FindAncestor<TreeViewItem>(e.OriginalSource as FrameworkElement);
+                if (treeViewItem != null) treeViewItem.IsSelected = true;
             }
             else
             {
                 e.Effects = DragDropEffects.None;
             }
-            
+
             e.Handled = true;
         }
 
@@ -380,6 +386,10 @@
             {
                 e.Effects = DragDropEffects.None;
             }
+            else
+            {
+                UpdateTargetBackground(e.OriginalSource, Brushes.Transparent);
+            }
 
             e.Handled = true;
         }
@@ -387,12 +397,15 @@
         private void DragScope_PreviewDragOver(object sender, DragEventArgs e)
         {
             // Only allow the drag if it's into a different Task item
-            if(e.OriginalSource is TextBlock || e.OriginalSource is Border)
+            if (e.OriginalSource is TextBlock)
             {
-                if(e.OriginalSource is FrameworkElement fe)
+                if (e.OriginalSource is FrameworkElement fe)
                 {
-                    if(fe.DataContext is Task && (fe.DataContext != _currentTask))
+                    if (fe.DataContext is Task && (fe.DataContext != _currentTask))
                     {
+                        
+                        
+                        UpdateTargetBackground(e.OriginalSource, _dragTargetBackground);
                         e.Effects = DragDropEffects.Move;
                         e.Handled = true;
                     }
@@ -402,8 +415,27 @@
                     }
                 }
             }
+        }
 
-            
+        /// <summary>
+        /// Updates the target Task item background during a drag n drop operation.
+        /// </summary>
+        /// <param name="control">The target Task item</param>
+        /// <param name="color">The color to apply</param>
+        private void UpdateTargetBackground(object control, Brush color)
+        {
+            FrameworkElement element = control as FrameworkElement;
+            FrameworkElement ancestor = TreeViewHelper.FindAncestor<Grid>(element);
+            if (ancestor == null) return;
+            ((Grid)ancestor).Background = color;
+        }
+
+        private TreeViewItem GetFocusedItem()
+        {
+            IInputElement focusedElement = Keyboard.FocusedElement;
+            if (focusedElement is TextBox) return null; //If the TextBox has the focus, do nothing
+
+            return focusedElement as TreeViewItem;
         }
     }
 }
