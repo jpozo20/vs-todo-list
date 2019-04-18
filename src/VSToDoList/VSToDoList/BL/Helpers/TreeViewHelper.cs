@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using VSToDoList.Controls;
@@ -81,6 +82,18 @@ namespace VSToDoList.BL.Helpers
             }
 
             return false;
+        }
+
+        public static T FindAncestor<T>(FrameworkElement item) where T : class
+        {
+            if (item == null) return default(T);
+
+            var parent = VisualTreeHelper.GetParent(item);
+            if (parent == null) return default(T);
+            if (!(parent is T))
+                parent = FindAncestor<T>((FrameworkElement)parent) as DependencyObject;
+
+            return parent as T;
         }
     }
 }
