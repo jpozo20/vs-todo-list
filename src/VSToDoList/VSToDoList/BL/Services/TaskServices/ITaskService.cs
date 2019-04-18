@@ -22,8 +22,8 @@ namespace VSToDoList.BL.Services.TaskServices
             ICollection<Models.ITask> tasks = new List<Models.ITask>();
             try
             {
-                var path = GetFinalJsonPath(solutionName, solutionFolderPath);
-                var json = File.ReadAllText(path);
+                string path = GetFinalJsonPath(solutionName, solutionFolderPath);
+                string json = File.ReadAllText(path);
                 if (!string.IsNullOrWhiteSpace(json))
                 {
                     tasks = JsonConvert.DeserializeObject<ICollection<Models.ITask>>(json);
@@ -31,7 +31,7 @@ namespace VSToDoList.BL.Services.TaskServices
 
                 return tasks;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 //TODO: Act according to the exception being thrown
                 return tasks;
@@ -40,13 +40,13 @@ namespace VSToDoList.BL.Services.TaskServices
 
         void ITaskService.SaveTasks(string solutionName, string solutionFolderPath, ICollection<Models.ITask> tasks)
         {
-            var json = Newtonsoft.Json.JsonConvert.SerializeObject(tasks);
-            var path = GetFinalJsonPath(solutionName, solutionFolderPath);
+            string json = Newtonsoft.Json.JsonConvert.SerializeObject(tasks);
+            string path = GetFinalJsonPath(solutionName, solutionFolderPath);
             try
             {
                 File.WriteAllText(path, json);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 //TODO: Act according to the exception being thrown
             }
@@ -54,7 +54,7 @@ namespace VSToDoList.BL.Services.TaskServices
 
         private string GetFinalJsonPath(string solutionName, string solutionFolderPath)
         {
-            var solutionTasksPath = Path.Combine(solutionFolderPath, solutionName + Extension);
+            string solutionTasksPath = Path.Combine(solutionFolderPath, solutionName + Extension);
             return solutionTasksPath;
         }
     }

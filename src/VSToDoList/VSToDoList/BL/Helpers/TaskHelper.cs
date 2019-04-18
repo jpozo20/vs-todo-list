@@ -14,10 +14,10 @@ namespace VSToDoList.BL.Helpers
         /// <returns>The parent <see cref="Task"/> of the child if found,else null</returns>
         public static ITask FindParentTask(ICollection<ITask> taskList, ITask taskToFindParentOf)
         {
-            var parentTask = taskList.FirstOrDefault(x => x.SubTasks.Contains(taskToFindParentOf));
+            ITask parentTask = taskList.FirstOrDefault(x => x.SubTasks.Contains(taskToFindParentOf));
             if (parentTask == null)
             {
-                foreach (var child in taskList)
+                foreach (ITask child in taskList)
                 {
                     parentTask = FindParentTaskInChild(child, taskToFindParentOf);
                     if (parentTask != null) return parentTask;
@@ -35,10 +35,10 @@ namespace VSToDoList.BL.Helpers
         /// <returns></returns>
         public static ITask FindParentTaskInChild(ITask child, ITask taskToFindParentOf)
         {
-            var parentTask = child.SubTasks.FirstOrDefault(x => x.SubTasks.Contains(taskToFindParentOf));
+            ITask parentTask = child.SubTasks.FirstOrDefault(x => x.SubTasks.Contains(taskToFindParentOf));
             if (parentTask == null)
             {
-                foreach (var childTask in child.SubTasks)
+                foreach (ITask childTask in child.SubTasks)
                 {
                     parentTask = FindParentTaskInChild(childTask, taskToFindParentOf);
                     if (parentTask != null) return parentTask;
@@ -59,18 +59,16 @@ namespace VSToDoList.BL.Helpers
             int insertIndex = list.IndexOf(toInsertAfterOf);
             int removeIndex = list.IndexOf(itemToInsert);
 
-            if(insertIndex > removeIndex)
+            if (insertIndex > removeIndex)
             {
                 list.Insert(insertIndex + 1, itemToInsert);
                 list.RemoveAt(removeIndex);
-
             }
             else
             {
                 list.Insert(insertIndex + 1, itemToInsert);
                 list.RemoveAt(removeIndex + 1);
             }
-            
         }
     }
 }
