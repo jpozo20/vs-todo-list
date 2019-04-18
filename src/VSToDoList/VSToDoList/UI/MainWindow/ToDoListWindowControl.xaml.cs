@@ -21,7 +21,6 @@
             _dragTargetBackground = new SolidColorBrush(Color.FromArgb(180, 253, 153, 20));
             Assembly.Load("VSToDoList.Controls");
             this.InitializeComponent();
-            
         }
 
         #region Properties
@@ -403,8 +402,6 @@
                 {
                     if (fe.DataContext is Task && (fe.DataContext != _currentTask))
                     {
-                        
-                        
                         UpdateTargetBackground(e.OriginalSource, _dragTargetBackground);
                         e.Effects = DragDropEffects.Move;
                         e.Handled = true;
@@ -430,6 +427,10 @@
             ((Grid)ancestor).Background = color;
         }
 
+        /// <summary>
+        /// Gets the currently Keyboard focused element
+        /// </summary>
+        /// <returns></returns>
         private TreeViewItem GetFocusedItem()
         {
             IInputElement focusedElement = Keyboard.FocusedElement;

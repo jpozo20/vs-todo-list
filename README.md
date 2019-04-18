@@ -19,6 +19,9 @@ There are four shorcuts available to ease the use of the tool window
 ![ScreenShot-1](https://i1.visualstudiogallery.msdn.s-msft.com/3a791b9b-7dcc-4b19-bdc3-4bbd7f3c1061/image/file/275206/1/screenshot-1.png)
 
 ## Changelog
+* v0.4.0
+  * Added drag and drop capability
+  * Added highlight to drag and drop target item
 * v0.3.0
   * Fixed a bug where the incorrect task would get the focus after deleting a task
   * Added shorcuts for adding, editing and deleting tasks 
